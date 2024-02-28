@@ -112,7 +112,7 @@ void checkTimeSettings( void )
 	unsigned char i = 0, channel, state, porta, tmp;
 	date_time locDateTime;
 	porta = PORTA;
-	for( i = 0; i < 64; i += 4 ){
+	while( i < 64 ){
 		getEepromTimeSetting(i, & locDateTime);
 		channel = locDateTime.second >> 4;
 		state = locDateTime.second & 0x0F;
@@ -128,6 +128,8 @@ void checkTimeSettings( void )
 							else
 								porta &= ~ tmp;
 			  }
+		 
+		i += 4;
 	}
 	PORTA = porta;
 }
