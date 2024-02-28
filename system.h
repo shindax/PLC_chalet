@@ -27,6 +27,11 @@
 #define INPUT_7		RB1
 #define INPUT_8		RB0
 
+#define INPUT_LINE		0
+#define TIME_TEMP_LINE	1
+#define DATE_LINE		2
+#define OUTPUT_LINE		3
+
 extern volatile unsigned char displayUpdateNeed;
 extern volatile unsigned char WebServerReady;
 extern volatile unsigned char usartData;

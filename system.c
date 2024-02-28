@@ -28,41 +28,40 @@ void updateDisplay( void )
 	displayOutputs();
 }
 
-
 void displayOutputs( void )
 {
 	unsigned char pos = 40;
-	display_char_8x16( pos, 3, 23 + OUTPUT_1 );
-	display_char_8x16( pos += 16, 3, 23 + OUTPUT_2 );
-	display_char_8x16( pos += 16, 3, 23 + OUTPUT_3 );
-	display_char_8x16( pos += 16, 3, 23 + OUTPUT_4 );
+	display_char_8x16( pos		, OUTPUT_LINE, 23 + OUTPUT_1 );
+	display_char_8x16( pos += 16, OUTPUT_LINE, 23 + OUTPUT_2 );
+	display_char_8x16( pos += 16, OUTPUT_LINE, 23 + OUTPUT_3 );
+	display_char_8x16( pos += 16, OUTPUT_LINE, 23 + OUTPUT_4 );
 }
 
 void displayInputs( void )
 {
 	unsigned char pos = 4;
 
-	display_char_8x16( pos, 0, 23 + INPUT_1 );
-	display_char_8x16( pos += 16, 0, 23 + INPUT_2 );
-	display_char_8x16( pos += 16, 0, 23 + INPUT_3 );
-	display_char_8x16( pos += 16, 0, 23 + INPUT_4 );
-	display_char_8x16( pos += 16, 0, 23 + INPUT_5 );
-	display_char_8x16( pos += 16, 0, 23 + INPUT_6 );
-	display_char_8x16( pos += 16, 0, 23 + INPUT_7 );
-	display_char_8x16( pos += 16, 0, 23 + INPUT_8 );
+	display_char_8x16( pos		, INPUT_LINE, 23 + INPUT_1 );
+	display_char_8x16( pos += 16, INPUT_LINE, 23 + INPUT_2 );
+	display_char_8x16( pos += 16, INPUT_LINE, 23 + INPUT_3 );
+	display_char_8x16( pos += 16, INPUT_LINE, 23 + INPUT_4 );
+	display_char_8x16( pos += 16, INPUT_LINE, 23 + INPUT_5 );
+	display_char_8x16( pos += 16, INPUT_LINE, 23 + INPUT_6 );
+	display_char_8x16( pos += 16, INPUT_LINE, 23 + INPUT_7 );
+	display_char_8x16( pos += 16, INPUT_LINE, 23 + INPUT_8 );
 }
 
 void displayTime( void )
 {
-	unsigned char pos = 0;
-	display_char_8x16( pos, 1, 26 + ( time.hour >> 4 ) );
-	display_char_8x16( pos += 8, 1, 26 + ( time.hour & 0x0F ) );
-	display_char_8x16( pos += 8, 1, 25 );
-	display_char_8x16( pos += 8, 1, 26 + ( time.minute >> 4 ) );
-	display_char_8x16( pos += 8, 1, 26 + ( time.minute & 0x0F ) );
-	display_char_8x16( pos += 8, 1, 25 );
-	display_char_8x16( pos += 8, 1, 26 + ( time.second >> 4 ) );
-	display_char_8x16( pos += 8, 1, 26 + ( time.second & 0x0F ) );
+	unsigned char pos = 8;
+	display_char_8x16( pos, TIME_TEMP_LINE, 26 + ( time.hour >> 4 ) );
+	display_char_8x16( pos += 8, TIME_TEMP_LINE, 26 + ( time.hour & 0x0F ) );
+	display_char_8x16( pos += 8, TIME_TEMP_LINE, 25 );
+	display_char_8x16( pos += 8, TIME_TEMP_LINE, 26 + ( time.minute >> 4 ) );
+	display_char_8x16( pos += 8, TIME_TEMP_LINE, 26 + ( time.minute & 0x0F ) );
+	display_char_8x16( pos += 8, TIME_TEMP_LINE, 25 );
+	display_char_8x16( pos += 8, TIME_TEMP_LINE, 26 + ( time.second >> 4 ) );
+	display_char_8x16( pos += 8, TIME_TEMP_LINE, 26 + ( time.second & 0x0F ) );
 }
 
 void displayTemp( void )
@@ -72,40 +71,40 @@ void displayTemp( void )
 	unsigned int whole = temp / 1000;
     unsigned int fraction = temp % 1000;
 
-	display_char_8x16( pos, 1, 26 + whole / 10 );
-	display_char_8x16( pos += 8, 1, 26 + whole % 10 );
-	display_char_8x16( pos += 8, 1, 38);
-	display_char_8x16( pos += 8, 1, 26 + fraction / 100 );
-	display_char_8x16( pos += 8, 1, 36);
-	display_char_8x16( pos += 8, 1, 37);
+	display_char_8x16( pos, TIME_TEMP_LINE, 26 + whole / 10 );
+	display_char_8x16( pos += 8, TIME_TEMP_LINE, 26 + whole % 10 );
+	display_char_8x16( pos += 8, TIME_TEMP_LINE, 37); // .
+	display_char_8x16( pos += 8, TIME_TEMP_LINE, 26 + fraction / 100 );
+//	display_char_8x16( pos += 8, TIME_TEMP_LINE, 38);// C
+	display_char_8x16( pos += 8, TIME_TEMP_LINE, 36);// deg
 }
 
 void displayDate( void )
 {
 	unsigned char i, pos = 0;
-	display_char_8x16( pos, 2, 26 + ( time.date >> 4 ) );
-	display_char_8x16( pos += 8, 2, 26 + ( time.date & 0x0F ) );
-	display_char_8x16( pos += 8, 2, 0 );
+	display_char_8x16( pos	   , DATE_LINE,  time.date >> 4 ? 26 + ( time.date >> 4 ) : 0 );
+	display_char_8x16( pos += 8, DATE_LINE, 26 + ( time.date & 0x0F ) );
+	display_char_8x16( pos += 8, DATE_LINE, 0 );
 	
 	i = time.month - 1;
-	display_char_8x16( pos += 8, 2, monthes[i][0] );
-	display_char_8x16( pos += 8, 2, monthes[i][1] );
-	display_char_8x16( pos += 8, 2, monthes[i][2] );
+	display_char_8x16( pos += 8, DATE_LINE, monthes[i][0] );
+	display_char_8x16( pos += 8, DATE_LINE, monthes[i][1] );
+	display_char_8x16( pos += 8, DATE_LINE, monthes[i][2] );
 
-	display_char_8x16( pos += 8, 2, 0 );
-	display_char_8x16( pos += 8, 2, 0 );
+	display_char_8x16( pos += 8, DATE_LINE, 0 );
+//	display_char_8x16( pos += 8, DATE_LINE, 0 );
 
 	i = time.day - 1;
-	display_char_8x16( pos += 8, 2, days[i][0] );
-	display_char_8x16( pos += 8, 2, days[i][1] );
-	display_char_8x16( pos += 8, 2, days[i][2] );
+	display_char_8x16( pos += 8, DATE_LINE, days[i][0] );
+	display_char_8x16( pos += 8, DATE_LINE, days[i][1] );
+	display_char_8x16( pos += 8, DATE_LINE, days[i][2] );
 
-	display_char_8x16( pos += 8, 2, 0 );
-	display_char_8x16( pos += 8, 2, 28 );
-	display_char_8x16( pos += 8, 2, 26 );
+	display_char_8x16( pos += 8, DATE_LINE, 0 );
+	display_char_8x16( pos += 8, DATE_LINE, 28 ); 
+	display_char_8x16( pos += 8, DATE_LINE, 26 );
 
-	display_char_8x16( pos += 8, 2, 26 + ( time.year >> 4 ) );
-	display_char_8x16( pos += 8, 2, 26 + ( time.year & 0x0F ));
+	display_char_8x16( pos += 8, DATE_LINE, 26 + ( time.year >> 4 ) );
+	display_char_8x16( pos += 8, DATE_LINE, 26 + ( time.year & 0x0F ));
 }
 
 void checkTimeSettings( void )
@@ -117,18 +116,20 @@ void checkTimeSettings( void )
 		getEepromTimeSetting(i, & locDateTime);
 		channel = locDateTime.second >> 4;
 		state = locDateTime.second & 0x0F;
-		if( channel > 4 )
-			continue;
-
-		if(	locDateTime.hour == time.hour && locDateTime.minute == time.minute ){
-				tmp = 1 << channel - 1;
-				if( state )
-					porta |= tmp;
-						else
-							porta &= ~ tmp;
-			}
+		if( locDateTime.day & ( 1 << time.day - 1 ) )
+			if(	
+				locDateTime.hour == time.hour 
+					&& 
+				locDateTime.minute == time.minute 
+			  ){
+					tmp = 1 << channel - 1;
+					if( state )
+						porta |= tmp;
+							else
+								porta &= ~ tmp;
+			  }
 	}
-		PORTA = porta;
+	PORTA = porta;
 }
 
 void getEepromTimeSetting( unsigned char addr, date_time * _time )
