@@ -19,15 +19,6 @@ void InitSFRS( void )
   T0IF   = 0 ;
  }
 
-void updateDisplay( void )
-{
-	displayTime();
-	displayTemp();
-	displayDate();
-	displayInputs();
-	displayOutputs();
-}
-
 void displayOutputs( void )
 {
 	unsigned char pos = 40;

@@ -45,7 +45,6 @@ extern unsigned char temp[];
 
 void InitPorts( void );
 void InitSFRS( void );
-void updateDisplay( void );
 void checkTimeSettings( void );
 void getEepromTimeSetting( unsigned char addr, date_time * _time );
 
