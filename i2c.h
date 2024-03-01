@@ -2,8 +2,11 @@
 #define	XC_HEADER_TEMPLATE_H
 #include <xc.h>
 
-#define ACK		1
-#define NOACK	0
+#define ACK			1
+#define NOACK		0
+
+#define I2C_READ	1
+#define I2C_WRITE	0
 
 void i2c_wait(void);
 void i2c_init(unsigned long);

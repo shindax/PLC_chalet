@@ -4,10 +4,10 @@ void read_time( date_time * time )
 {
 	i2c_init(100000);
     i2c_start();           				// start I2C
-    i2c_write(0xD0);       				// RTC chip address
+    i2c_write( DS1307ADDR | I2C_WRITE );       				// RTC chip address
     i2c_write(0);          				// send register address
     i2c_repeated_start();  				// restart I2C
-    i2c_write(0xD1);       				// initialize data read
+    i2c_write( DS1307ADDR | I2C_READ );       				// initialize data read
     time -> second = i2c_read(ACK);  	// read seconds from register 0
     time -> minute = i2c_read(ACK);  	// read minutes from register 1
     time -> hour   = i2c_read(ACK);  	// read hour from register 2
@@ -22,7 +22,7 @@ void write_time( date_time * time )
 {
   i2c_init(100000);
   i2c_start();         		// start I2C
-  i2c_write(0xD0);     		// RTC chip address
+  i2c_write( DS1307ADDR | I2C_WRITE );     		// RTC chip address
   i2c_write(0);        		// send register address
   i2c_write(0);        		// reset seconds and start oscillator
   i2c_write(time -> minute);// write minute value to RTC chip

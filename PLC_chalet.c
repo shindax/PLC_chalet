@@ -35,14 +35,19 @@ void main()
     display_clear(0);
 
 /*
-	read_time( ( date_time * ) & time );
-		time.minute = 0x20;
-		time.day = 3;
-		time.date = 0x28;
-		time.month = 0x02;
-		time.year = 0x24;
-	write_time( ( date_time * ) & time );
+	write_byte( 0,0x00 );
+	__delay_ms( 1 );
+	eeprom_write( 0x30,	read_byte( 0 ));
 */
+
+//	read_time( ( date_time * ) & time );
+//		time.minute = 0x10;
+//		time.day = 5;
+//		time.date = 0x28;
+//		time.month = 0x02;
+//		time.year = 0x24;
+//	write_time( ( date_time * ) & time );
+
 
   while(1){
 		if( displayUpdateNeed ){

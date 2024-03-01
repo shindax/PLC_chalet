@@ -7,6 +7,7 @@
 #include "usart.h"
 #include "sh1106.h"
 #include "18b20.h"
+#include "24c32.h"
 
 #define _XTAL_FREQ	4096000UL
 

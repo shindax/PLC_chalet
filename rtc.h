@@ -1,3 +1,5 @@
+#define DS1307ADDR	0xD0
+
 typedef struct {
 	unsigned char second, minute, hour, day, date, month, year;
 } date_time;
