@@ -27,6 +27,12 @@
 #define INPUT_7		RB1
 #define INPUT_8		RB0
 
+#define SETPOINT_ENABLED				0x80
+#define INPUT_OUTPUT_SYMBOL_TABLE_SHIFT	23
+#define COLON_SYMBOL					25
+#define DIGIT_TABLE_SHIFT				26
+#define SYMBOL_SIZE						16
+
 #define INPUT_LINE		0
 #define TIME_TEMP_LINE	1
 #define DATE_LINE		2
