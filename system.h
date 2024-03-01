@@ -10,6 +10,7 @@
 #include "24c32.h"
 
 #define _XTAL_FREQ	4096000UL
+#define I2C_SPEED	400000
 
 #define HEART_BEAT	RA4
 #define TMR0_PRELOAD 176

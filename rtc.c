@@ -2,7 +2,7 @@
 
 void read_time( date_time * time )
 {
-	i2c_init(100000);
+	i2c_init( I2C_SPEED );
     i2c_start();           				// start I2C
     i2c_write( DS1307ADDR | I2C_WRITE );       				// RTC chip address
     i2c_write(0);          				// send register address
@@ -20,7 +20,7 @@ void read_time( date_time * time )
 
 void write_time( date_time * time )
 {
-  i2c_init(100000);
+  i2c_init( I2C_SPEED );
   i2c_start();         		// start I2C
   i2c_write( DS1307ADDR | I2C_WRITE );     		// RTC chip address
   i2c_write(0);        		// send register address

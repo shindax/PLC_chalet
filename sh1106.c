@@ -1,6 +1,4 @@
-#include "sh1106.h"
-#include "i2c.h"
-#include <string.h>
+#include "system.h"
 
 void display_command(uint8_t command){
     i2c_start();
@@ -18,10 +16,8 @@ void display_data(uint8_t data){
     i2c_stop();
 }
 
-
-
 void display_init(void){
-    i2c_init(100000);   	/*Display Off*/
+    i2c_init( I2C_SPEED );   	/*Display Off*/
     display_command(0xAE);  /*Set Lower Column Address*/ 
     display_command(0x02);  /*set higher column address*/  
     display_command(0x10);  /*set display start line*/ 
@@ -82,17 +78,6 @@ void display_clear(uint8_t data){
             //while(SSPCONbits.WCOL==1);          
         }
     }
-}
-
-void display_text(char *txt){
-    /*
-    while(*txt){
-        display_char(*txt++);
-        while(SSPCONbits.WCOL==1);
-    }
-    */
-    for(uint8_t i=0;i<strlen(txt);i++)
-        display_char(txt[i]);
 }
 
 void display_char_8x16(uint8_t x, uint8_t y, char ch){

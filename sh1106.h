@@ -17,7 +17,6 @@ void display_init(void);
 void display_xy(uint8_t x, uint8_t y);
 void display_char(char ch);
 void display_clear(uint8_t data);
-void display_text(char *txt);
 void display_char_8x16(uint8_t x, uint8_t y, char ch);
 void display_text_8x16(uint8_t x, uint8_t y, unsigned char *txt, unsigned char len );
 

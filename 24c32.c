@@ -3,7 +3,7 @@
 unsigned char ext_eeprom_read_byte( unsigned int addr )
 {
 	unsigned char byte = 0xFF;
-	i2c_init(100000);
+	i2c_init( I2C_SPEED );
     i2c_start();           				
     i2c_write( AT24C32ADDR | I2C_WRITE);
     i2c_write( addr >> 8 );
@@ -17,7 +17,7 @@ unsigned char ext_eeprom_read_byte( unsigned int addr )
 
 void ext_eeprom_write_byte( unsigned int addr, unsigned char byte )
 {
-	i2c_init(100000);
+	i2c_init( I2C_SPEED );
     i2c_start();           				
     i2c_write( AT24C32ADDR | I2C_WRITE );
     i2c_write( addr >> 8 );
