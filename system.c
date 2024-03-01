@@ -58,7 +58,6 @@ void displayTime( void )
 void displayTemp( void )
 {
 	unsigned char pos = 80;
-	unsigned long temp = DS18B20CalculateTemperature();
 	unsigned int whole = temp / 1000;
     unsigned int fraction = temp % 1000;
 
@@ -131,4 +130,10 @@ void getEepromTimeSetting( unsigned char addr, date_time * _time )
 	_time -> hour = eeprom_read( addr + 1 );
 	_time -> minute = eeprom_read( addr + 2 );
 	_time -> day = eeprom_read( addr + 3 );
+}
+
+void getData( void )
+{
+	temp = DS18B20CalculateTemperature();
+	read_time( ( date_time * ) & time );
 }

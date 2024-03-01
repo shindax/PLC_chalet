@@ -4,13 +4,14 @@ volatile unsigned char displayUpdateNeed = 0;
 volatile unsigned char WebServerReady = 0;
 volatile unsigned char usartData = 0;
 volatile date_time time;
+volatile unsigned long temp;
 
 const unsigned char monthes[][3] = {{22,12,3},{19,6,3},{11,1,15},{1,14,15},{11,1,8},{7,21,12},{7,21,10},{1,3,4},{16,6,12},{13,9,17},{12,13,22},{5,6,9}};
 const unsigned char days[][3] = {{14,13,12},{3,17,15},{16,15,5},{20,17,3},{14,22,17},{16,18,2},{3,16,9}};
 
-#define hour 	0x11
-#define minute1 0x19
-#define minute2 0x20
+#define hour 	0x15
+#define minute1 0x51
+#define minute2 0x52
 
 __EEPROM_DATA(0x11,hour,minute1,0b10010000,0x10,hour,minute2+1,0b10010000);
 __EEPROM_DATA(0x21,hour,minute1,0b00010000,0x20,hour,minute2,0b00010000);
@@ -52,9 +53,8 @@ void main()
   while(1){
 		if( displayUpdateNeed ){
 			DS18B20Convert();
-			read_time( ( date_time * ) & time );
+			getData();
 			displayUpdateNeed = 0;
-			
 			if( time.minute != minute ){// check settings one time per minute only
 				minute = time.minute;
 				checkTimeSettings();

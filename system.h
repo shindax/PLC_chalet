@@ -44,12 +44,10 @@ extern volatile unsigned char displayUpdateNeed;
 extern volatile unsigned char WebServerReady;
 extern volatile unsigned char usartData;
 extern volatile date_time time;
+extern volatile unsigned long temp;
 
 extern const unsigned char monthes[][3];
 extern const unsigned char days[][3];
-
-extern unsigned int raw_temp;
-extern unsigned char temp[];
 
 void InitPorts( void );
 void InitSFRS( void );
@@ -68,6 +66,7 @@ void displayInputs( void );
 void displayTime( void );
 void displayTemp( void );
 void displayDate( void );
+void getData( void );
 
 __CONFIG ( XT & WDTDIS & PWRTEN & BORDIS & LVPDIS & DUNPROT & WRTDIS & DEBUGDIS & UNPROTECT);
 
