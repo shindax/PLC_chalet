@@ -1,3 +1,6 @@
+#ifndef DS1307_H
+#define	DS1307_H
+
 #define DS1307ADDR	0xD0
 
 typedef struct {
@@ -6,3 +9,5 @@ typedef struct {
 
 void read_time( date_time * time );
 void write_time( date_time * time  );
+
+#endif

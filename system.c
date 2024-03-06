@@ -3,7 +3,7 @@
 void InitPorts( void )
 {
   ADCON1 = 0B10000110 ; // All ports are digital
-  PORTA = 0 ; // Clear all traps
+  PORTA = 0b00010000;
   PORTB = 0xFF ; //
   PORTC = 0 ;
   TRISA  = 0;
@@ -19,93 +19,20 @@ void InitSFRS( void )
   T0IF   = 0 ;
  }
 
-void displayOutputs( void )
-{
-	unsigned char pos = 40;
-	display_char_8x16( pos				 , OUTPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + OUTPUT_1 );
-	display_char_8x16( pos += SYMBOL_SIZE, OUTPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + OUTPUT_2 );
-	display_char_8x16( pos += SYMBOL_SIZE, OUTPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + OUTPUT_3 );
-	display_char_8x16( pos += SYMBOL_SIZE, OUTPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + OUTPUT_4 );
-}
-
-void displayInputs( void )
-{
-	unsigned char pos = 4;
-
-	display_char_8x16( pos				 , INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_1 );
-	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_2 );
-	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_3 );
-	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_4 );
-	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_5 );
-	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_6 );
-	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_7 );
-	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_8 );
-}
-
-void displayTime( void )
-{
-	unsigned char pos = 8;
-	display_char_8x16( pos, TIME_TEMP_LINE, DIGIT_TABLE_SHIFT + ( time.hour >> 4 ) );
-	display_char_8x16( pos += 8, TIME_TEMP_LINE, DIGIT_TABLE_SHIFT + ( time.hour & 0x0F ) );
-	display_char_8x16( pos += 8, TIME_TEMP_LINE, COLON_SYMBOL );
-	display_char_8x16( pos += 8, TIME_TEMP_LINE, DIGIT_TABLE_SHIFT + ( time.minute >> 4 ) );
-	display_char_8x16( pos += 8, TIME_TEMP_LINE, DIGIT_TABLE_SHIFT + ( time.minute & 0x0F ) );
-	display_char_8x16( pos += 8, TIME_TEMP_LINE, COLON_SYMBOL );
-	display_char_8x16( pos += 8, TIME_TEMP_LINE, DIGIT_TABLE_SHIFT + ( time.second >> 4 ) );
-	display_char_8x16( pos += 8, TIME_TEMP_LINE, DIGIT_TABLE_SHIFT + ( time.second & 0x0F ) );
-}
-
-void displayTemp( void )
-{
-	unsigned char pos = 80;
-	unsigned int whole = temp / 1000;
-    unsigned int fraction = temp % 1000;
-
-	display_char_8x16( pos, TIME_TEMP_LINE, DIGIT_TABLE_SHIFT + whole / 10 );
-	display_char_8x16( pos += 8, TIME_TEMP_LINE, DIGIT_TABLE_SHIFT + whole % 10 );
-	display_char_8x16( pos += 8, TIME_TEMP_LINE, 37); // .
-	display_char_8x16( pos += 8, TIME_TEMP_LINE, DIGIT_TABLE_SHIFT + fraction / 100 );
-//	display_char_8x16( pos += 8, TIME_TEMP_LINE, 38);// C
-	display_char_8x16( pos += 8, TIME_TEMP_LINE, 36);// deg
-}
-
-void displayDate( void )
-{
-	unsigned char i, pos = 0;
-	display_char_8x16( pos	   , DATE_LINE,  time.date >> 4 ? DIGIT_TABLE_SHIFT + ( time.date >> 4 ) : 0 );
-	display_char_8x16( pos += 8, DATE_LINE, DIGIT_TABLE_SHIFT + ( time.date & 0x0F ) );
-	display_char_8x16( pos += 8, DATE_LINE, 0 );
-	
-	i = time.month - 1;
-	display_char_8x16( pos += 8, DATE_LINE, monthes[i][0] );
-	display_char_8x16( pos += 8, DATE_LINE, monthes[i][1] );
-	display_char_8x16( pos += 8, DATE_LINE, monthes[i][2] );
-
-	display_char_8x16( pos += 8, DATE_LINE, 0 );
-//	display_char_8x16( pos += 8, DATE_LINE, 0 );
-
-	i = time.day - 1;
-	display_char_8x16( pos += 8, DATE_LINE, days[i][0] );
-	display_char_8x16( pos += 8, DATE_LINE, days[i][1] );
-	display_char_8x16( pos += 8, DATE_LINE, days[i][2] );
-
-	display_char_8x16( pos += 8, DATE_LINE, 0 );
-	display_char_8x16( pos += 8, DATE_LINE, 28 ); 
-	display_char_8x16( pos += 8, DATE_LINE, DIGIT_TABLE_SHIFT );
-
-	display_char_8x16( pos += 8, DATE_LINE, DIGIT_TABLE_SHIFT + ( time.year >> 4 ) );
-	display_char_8x16( pos += 8, DATE_LINE, DIGIT_TABLE_SHIFT + ( time.year & 0x0F ));
-}
 
 void checkTimeSettings( void )
 {
-	unsigned char i = 0, channel, state, porta, tmp;
+	unsigned char channel, state, porta, tmp;
+	unsigned int i ;
 	date_time locDateTime;
+
 	porta = PORTA;
-	while( i < 64 ){
+	for( i = 0 ; i < 256; i += 4 ){
 		getEepromTimeSetting(i, & locDateTime);
 		channel = locDateTime.second >> 4;
 		state = locDateTime.second & 0x0F;
+		if( channel > 4 || locDateTime.day & 0x80 == 0 )// channel is too big or setting is disabled
+			continue;
 		if( locDateTime.day & ( 1 << time.day - 1 ) && locDateTime.day & SETPOINT_ENABLED )
 			if(	
 				locDateTime.hour == time.hour 
@@ -118,8 +45,6 @@ void checkTimeSettings( void )
 							else
 								porta &= ~ tmp;
 			  }
-		 
-		i += 4;
 	}
 	PORTA = porta;
 }
@@ -134,6 +59,4 @@ void getEepromTimeSetting( unsigned char addr, date_time * _time )
 
 void getData( void )
 {
-	temp = DS18B20CalculateTemperature();
-	read_time( ( date_time * ) & time );
 }

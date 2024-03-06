@@ -1,3 +1,5 @@
+#ifndef DS18B20_H
+#define	DS18B20_H
 #include <xc.h>
 
 #define DATA            	RC2
@@ -34,3 +36,5 @@ void DS18B20Init( void );
 void DS18B20Convert( void );
 unsigned long DS18B20CalculateTemperature( void );
 void DS18B20ReadScratchpad( unsigned char * scratch );
+
+#endif

@@ -46,7 +46,8 @@ void display_init(void){
     display_command(0xAF);  //display ON
 }
 
-void display_xy(uint8_t x, uint8_t y){
+void display_xy(uint8_t x, uint8_t y)
+{
     display_command(YLevel+y);
     display_command((((x+2)&0xF0)>>4)|0x10);
     display_command((x+2)&0x0F);
@@ -73,32 +74,31 @@ void display_clear(uint8_t data){
         display_command(YLevel+i);
         display_command(XLevelL);
         display_command(XLevelH);
-        for(uint8_t n=0;n<WIDTH;n++){
+        for(uint8_t n=0;n<WIDTH;n++)
             display_data(data);
-            //while(SSPCONbits.WCOL==1);          
-        }
     }
 }
 
-void display_char_8x16(uint8_t x, uint8_t y, char ch){
+void raw_display_char_8x16(uint8_t x, uint8_t y, char ch, unsigned char term )
+{
     y=y*2;
     display_xy(x,y);
     uint16_t temp;
-//    ch=ch-32;
-    temp=ch*16;
+    temp = ch*16;
     uint8_t i=0;
     for(i=0;i<8;i++)
-        display_data(font_8x16[temp+i]);
+        display_data( term ^ font_8x16[temp+i] );
     display_xy(x,y+1);
     for(i=8;i<16;i++)
-        display_data(font_8x16[temp+i]);
+        display_data( term ^ font_8x16[temp+i] );
 }
 
-void display_text_8x16(uint8_t x, uint8_t y, unsigned char *txt, unsigned char len )
+void display_char_8x16(uint8_t x, uint8_t y, char ch)
 {
-	unsigned char i = 0;
-	while( i < len ){
-    	display_char_8x16(x,y,txt[i++]);
-		x += 8;
-	}
+	raw_display_char_8x16(x, y, ch, NORMAL_CHAR);
+}
+
+void display_inv_char_8x16(uint8_t x, uint8_t y, char ch)
+{
+	raw_display_char_8x16(x,y, ch, INVERSE_CHAR);
 }

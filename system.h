@@ -8,9 +8,10 @@
 #include "sh1106.h"
 #include "18b20.h"
 #include "24c32.h"
+#include "display_data.h"
 
 #define _XTAL_FREQ	4096000UL
-#define I2C_SPEED	400000
+#define I2C_SPEED	50000
 
 #define HEART_BEAT	RA4
 #define TMR0_PRELOAD 176
@@ -32,7 +33,14 @@
 #define SETPOINT_ENABLED				0x80
 #define INPUT_OUTPUT_SYMBOL_TABLE_SHIFT	23
 #define COLON_SYMBOL					25
+#define DOT_SYMBOL						37
+#define BOLD_DOT_SYMBOL					49
+#define DEGREE_SYMBOL					36
+#define BOLD_DEGREE_SYMBOL				48
+#define SPACE_SYMBOL					0
+
 #define DIGIT_TABLE_SHIFT				26
+#define BOLD_DIGIT_TABLE_SHIFT			38
 #define SYMBOL_SIZE						16
 
 #define INPUT_LINE		0
@@ -41,6 +49,7 @@
 #define OUTPUT_LINE		3
 
 extern volatile unsigned char displayUpdateNeed;
+extern volatile unsigned char dataUpdateNeed;
 extern volatile unsigned char WebServerReady;
 extern volatile unsigned char usartData;
 extern volatile date_time time;
@@ -67,6 +76,7 @@ void displayTime( void );
 void displayTemp( void );
 void displayDate( void );
 void getData( void );
+unsigned char getDisplayableDigit( unsigned char digit );
 
 __CONFIG ( XT & WDTDIS & PWRTEN & BORDIS & LVPDIS & DUNPROT & WRTDIS & DEBUGDIS & UNPROTECT);
 
