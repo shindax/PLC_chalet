@@ -1,48 +1,60 @@
-#include "system.h"
+#include "i2c.h"
 
-void i2c_init(unsigned long i2c_clk_freq)
+//Initialize I2C Module as Master
+void i2c_Init(const unsigned long speed)
 {
-  SSPCON  = 0x28;  // configure MSSP module to work in i2c_ mode
-  SSPADD  = (_XTAL_FREQ/(4 * i2c_clk_freq)) - 1;  // set i2c_ clock frequency
+  SSPCON = 0b00101000;            				//SSP Module as Master
+  SSPCON2 = 0;
+  SSPADD = ( _XTAL_FREQ / ( 4 * speed ) ) - 1; 	//Setting Clock Speed
   SSPSTAT = 0;
+  TRISC3 = 1;                   				//Setting as input as given in datasheet
+  TRISC4 = 1;                   				//Setting as input as given in datasheet
 }
 
-void i2c_start( void )
+//For Waiting
+void i2c_Wait( void )
 {
-  while ((SSPSTAT & 0x04) || (SSPCON2 & 0x1F));  // wait for MSSP module to be free (not busy)
-  SEN = 1;  // initiate start condition
+  while ((SSPSTAT & 0x04) || (SSPCON2 & 0x1F)); //Transmit is in progress
 }
 
-void i2c_repeated_start()
+//Start Condition
+void i2c_Start( void )
 {
-  while ((SSPSTAT & 0x04) || (SSPCON2 & 0x1F));  // wait for MSSP module to be free (not busy)
-  RSEN = 1;  // initiate repeated start condition
+  i2c_Wait();    
+  SEN = 1;             //Initiate start condition
 }
 
-void i2c_stop()
+//Repeated Start
+void i2c_RepeatedStart( void )
 {
-  while ((SSPSTAT & 0x04) || (SSPCON2 & 0x1F));  // wait for MSSP module to be free (not busy)
-  PEN = 1;  // initiate stop condition
+  i2c_Wait();
+  RSEN = 1;           	//Initiate repeated start condition
 }
 
-void i2c_write(unsigned char i2c_data)
+//Stop Condition
+void i2c_Stop( void )
 {
-  while ((SSPSTAT & 0x04) || (SSPCON2 & 0x1F));  // wait for MSSP module to be free (not busy)
-  SSPBUF = i2c_data;  // update buffer
+  i2c_Wait();
+  PEN = 1;           	//Initiate stop condition
 }
 
-unsigned char i2c_read(unsigned char ack)
+//Write Data
+void i2c_Write( unsigned short data )
 {
-  unsigned char _data;
-  while ((SSPSTAT & 0x04) || (SSPCON2 & 0x1F));  // wait for MSSP module to be free (not busy)
+  i2c_Wait();
+  SSPBUF = data;        //Write data to SSPBUF
+}
+
+// Read Data
+unsigned short i2c_Read( unsigned short ack )
+{
+  unsigned short data;
+  i2c_Wait();
   RCEN = 1;
-  while ((SSPSTAT & 0x04) || (SSPCON2 & 0x1F));  // wait for MSSP module to be free (not busy)
-  _data = SSPBUF;  // read data from buffer
-  while ((SSPSTAT & 0x04) || (SSPCON2 & 0x1F));  // wait for MSSP module to be free (not busy)
-  // send acknowledge pulse ? (depends on ack, if 1 send, otherwise don't send)
-  ACKDT = !ack;
-  ACKEN = 1;
-  return _data;  // return data read
+  i2c_Wait();
+  data = SSPBUF;      	//Read data from SSPBUF
+  i2c_Wait();
+  ACKDT = ack ? 0 : 1;  //Acknowledge bit
+  ACKEN = 1;          	//Acknowledge sequence
+  return data;
 }
-
-

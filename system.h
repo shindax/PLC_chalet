@@ -11,7 +11,7 @@
 #include "display_data.h"
 
 #define _XTAL_FREQ	4096000UL
-#define I2C_SPEED	50000
+#define I2C_SPEED	100000
 
 #define HEART_BEAT	RA4
 #define TMR0_PRELOAD 176
@@ -21,16 +21,30 @@
 #define OUTPUT_3	RA2
 #define OUTPUT_4	RA3
 
-#define INPUT_1		RB7
-#define INPUT_2		RB6
-#define INPUT_3		RB5
-#define INPUT_4		RB4
-#define INPUT_5		RB3
-#define INPUT_6		RB2
-#define INPUT_7		RB1
-#define INPUT_8		RB0
+#define INPUT_1		(unsigned char)RB7
+#define INPUT_2		(unsigned char)RB6
+#define INPUT_3		(unsigned char)RB5
+#define INPUT_4		(unsigned char)RB4
+#define INPUT_5		(unsigned char)RB3
+#define INPUT_6		(unsigned char)RB2
+#define INPUT_7		(unsigned char)RB1
+#define INPUT_8		(unsigned char)RB0
 
-#define SETPOINT_ENABLED				0x80
+#define	MON			0x01
+#define	TUE			0x02
+#define	WED			0x04
+#define	THU			0x08
+#define	FRI			0x10
+#define	SAT			0x20
+#define	SUN			0x40
+#define EVERYDAY	MON|TUE|WED|THU|FRI|SAT|SUN
+#define	DISABLED	0x00
+
+#define	FILL_BARREL		0x01
+#define	WATERING		0x02
+#define	CH_3			0x03
+#define	INFRARED_LAMP	0x04
+
 #define INPUT_OUTPUT_SYMBOL_TABLE_SHIFT	23
 #define COLON_SYMBOL					25
 #define DOT_SYMBOL						37
@@ -43,10 +57,10 @@
 #define BOLD_DIGIT_TABLE_SHIFT			38
 #define SYMBOL_SIZE						16
 
-#define INPUT_LINE		0
-#define TIME_TEMP_LINE	1
-#define DATE_LINE		2
-#define OUTPUT_LINE		3
+#define INPUT_LINE						0
+#define TIME_TEMP_LINE					1
+#define DATE_LINE						2
+#define OUTPUT_LINE						3
 
 extern volatile unsigned char displayUpdateNeed;
 extern volatile unsigned char dataUpdateNeed;
@@ -61,7 +75,6 @@ extern const unsigned char days[][3];
 void InitPorts( void );
 void InitSFRS( void );
 void checkTimeSettings( void );
-void getEepromTimeSetting( unsigned char addr, date_time * _time );
 
 unsigned char ds18b20_start( void );
 void ds18b20_write_bit( unsigned char );
@@ -77,6 +90,7 @@ void displayTemp( void );
 void displayDate( void );
 void getData( void );
 unsigned char getDisplayableDigit( unsigned char digit );
+unsigned char checkInRangeTimeSettings( void );
 
 __CONFIG ( XT & WDTDIS & PWRTEN & BORDIS & LVPDIS & DUNPROT & WRTDIS & DEBUGDIS & UNPROTECT);
 

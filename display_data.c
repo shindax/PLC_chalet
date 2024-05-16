@@ -11,8 +11,7 @@ void displayOutputs( void )
 
 void displayInputs( void )
 {
-	unsigned char pos = 4;
-
+	unsigned char pos = 0;
 	display_char_8x16( pos				 , INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_1 );
 	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_2 );
 	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_3 );
@@ -25,7 +24,17 @@ void displayInputs( void )
 
 void displayTime( void )
 {
-	unsigned char pos = 12;
+	unsigned char pos = 0;
+
+	if( time.hour > 0x23 || time.minute > 0x59 || time.second > 0x59 )
+		return;
+
+	display_char_8x16( pos, OUTPUT_LINE, 0 );
+	display_char_8x16( pos += SYMBOL_SIZE, OUTPUT_LINE, 0 );
+	pos = 24;
+	display_char_8x16( pos, OUTPUT_LINE, 0 );
+
+	pos = 12;
 	display_char_8x16( pos, TIME_TEMP_LINE, getDisplayableDigit(( unsigned char )( time.hour >> 4 )) );
 	display_char_8x16( pos += 8, TIME_TEMP_LINE, getDisplayableDigit( ( unsigned char ) ( time.hour & 0x0F )));
 	display_char_8x16( pos += 8, TIME_TEMP_LINE, COLON_SYMBOL );
@@ -42,12 +51,13 @@ void displayTemp( void )
 	unsigned int whole = temp / 1000;
     unsigned int fraction = temp % 1000;
 
-	display_inv_char_8x16( pos, TIME_TEMP_LINE,      getDisplayableBoldDigit( ( unsigned char )( whole / 10 )));
+	display_inv_char_8x16( pos , TIME_TEMP_LINE, ( unsigned char ) SPACE_SYMBOL);
+	display_inv_char_8x16( pos += 8, TIME_TEMP_LINE,      getDisplayableBoldDigit( ( unsigned char )( whole / 10 )));
 	display_inv_char_8x16( pos += 8, TIME_TEMP_LINE, getDisplayableBoldDigit( ( unsigned char )( whole % 10 )));
 	display_inv_char_8x16( pos += 8, TIME_TEMP_LINE, ( unsigned char ) BOLD_DOT_SYMBOL ); // .
 	display_inv_char_8x16( pos += 8, TIME_TEMP_LINE, getDisplayableBoldDigit( ( unsigned char )( fraction / 100 )));
 	display_inv_char_8x16( pos += 8, TIME_TEMP_LINE, ( unsigned char ) BOLD_DEGREE_SYMBOL);// deg
-	display_char_8x16( pos += 8, TIME_TEMP_LINE, ( unsigned char ) SPACE_SYMBOL);// deg
+	display_char_8x16( pos += 8, TIME_TEMP_LINE, ( unsigned char ) SPACE_SYMBOL);
 }
 
 unsigned char getDisplayableDigit( unsigned char digit )
@@ -84,7 +94,10 @@ void displayDate( void )
 	display_char_8x16( pos += 8, DATE_LINE, ( unsigned char ) 28 ); // 2
 	display_char_8x16( pos += 8, DATE_LINE, ( unsigned char ) 26 ); // 0
 
-	display_char_8x16( pos += 8, DATE_LINE, getDisplayableDigit( ( unsigned char )( time.year >> 4 )));
+//	display_char_8x16( pos += 8, DATE_LINE, getDisplayableDigit( ( unsigned char )( time.year >> 4 )));
+
+	display_char_8x16( pos += 8, DATE_LINE, getDisplayableDigit( ( unsigned char )0x02 ));
 	display_char_8x16( pos += 8, DATE_LINE, getDisplayableDigit( ( unsigned char )( time.year & 0x0F )));
+
 }
 

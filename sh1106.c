@@ -1,23 +1,23 @@
 #include "system.h"
 
 void display_command(uint8_t command){
-    i2c_start();
-    i2c_write(SSD1106_I2C_ADDR);
-    i2c_write(0x00);
-    i2c_write(command);
-    i2c_stop();
+    i2c_Start();
+    i2c_Write(SSD1106_I2C_ADDR);
+    i2c_Write(0x00);
+    i2c_Write(command);
+    i2c_Stop();
 }
 
 void display_data(uint8_t data){
-    i2c_start();
-    i2c_write(SSD1106_I2C_ADDR);
-    i2c_write(0x40);
-    i2c_write(data);
-    i2c_stop();
+    i2c_Start();
+    i2c_Write(SSD1106_I2C_ADDR);
+    i2c_Write(0x40);
+    i2c_Write(data);
+    i2c_Stop();
 }
 
 void display_init(void){
-    i2c_init( I2C_SPEED );   	/*Display Off*/
+    i2c_Init( I2C_SPEED );   	/*Display Off*/
     display_command(0xAE);  /*Set Lower Column Address*/ 
     display_command(0x02);  /*set higher column address*/  
     display_command(0x10);  /*set display start line*/ 
@@ -46,6 +46,14 @@ void display_init(void){
     display_command(0xAF);  //display ON
 }
 
+
+void display_sleep(void)
+{
+    i2c_Init( I2C_SPEED );   	/*Display Off*/
+    display_command(0xAE);  //sleep
+}
+
+
 void display_xy(uint8_t x, uint8_t y)
 {
     display_command(YLevel+y);
@@ -61,11 +69,11 @@ void display_char(char ch){
     bytes[0]=0x40;
     memmove(bytes+1,base,8);
     
-    i2c_start();
-    i2c_write(SSD1106_I2C_ADDR);
-    i2c_write(0x40);
-    for(uint8_t i=1;i<=8;i++){ i2c_write(bytes[i]);}
-    i2c_stop();
+    i2c_Start();
+    i2c_Write(SSD1106_I2C_ADDR);
+    i2c_Write(0x40);
+    for(uint8_t i=1;i<=8;i++){ i2c_Write(bytes[i]);}
+    i2c_Stop();
 }
 */
 
