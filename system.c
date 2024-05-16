@@ -52,12 +52,11 @@ void checkTimeSettings( void )
 	
 	if( stateChanged ){
 		PORTA = porta;
-
 // Сохраненяем состояние выходов в старшем ниббле байта года
 		time.year |= porta << 4 ;
 		write_time( ( date_time * ) & time );
 	}
-}
+}// void checkTimeSettings( void )
 
 void getEepromTimeSetting( unsigned char addr, unsigned char * channel, unsigned char * day, date_time * from, date_time * to )
 {
@@ -68,13 +67,3 @@ void getEepromTimeSetting( unsigned char addr, unsigned char * channel, unsigned
 	to -> hour = eeprom_read( addr + 4 );
 	to -> minute = eeprom_read( addr + 5 );
 }
-
-void getData( void )
-{
-}
-
-unsigned char checkInRange( unsigned char min, unsigned char max, unsigned char value )
-{
-	return min <= value && value <= max ;
-}
-
