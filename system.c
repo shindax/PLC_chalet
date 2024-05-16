@@ -52,7 +52,9 @@ void checkTimeSettings( void )
 	
 	if( stateChanged ){
 		PORTA = porta;
-		time.year = ( porta << 4 ) | 0x04;
+
+// Сохраненяем состояние выходов в старшем ниббле байта года
+		time.year |= porta << 4 ;
 		write_time( ( date_time * ) & time );
 	}
 }
@@ -76,33 +78,3 @@ unsigned char checkInRange( unsigned char min, unsigned char max, unsigned char 
 	return min <= value && value <= max ;
 }
 
-/*
-unsigned char checkInRangeTimeSettings( void )
-{
-	date_time dateTimeFrom;
-	date_time dateTimeTo;
-	unsigned char channel = 0, porta = 0, tmp = 0, day = 0;
-
-	unsigned int i = 0;
-
-	for( i = 0 ; i < 256; i += 8 ){
-		getEepromTimeSetting( i, & channel, & day, & dateTimeFrom, & dateTimeTo );
-
-		if( channel > 4 )// channel is too big or setting is empty
-			continue;
-
-		if( day & ( 1 << time.day - 1 ) && ( day & ( 1 << time.day - 1 ))){
-			tmp = 1 << channel - 1;
-
-			if(	
-				checkInRange( dateTimeFrom.hour, dateTimeTo.hour, time.hour )  // Внутри дипазона по часам 
-					&&
-				checkInRange( dateTimeFrom.minute, dateTimeTo.minute, time.minute )	// Внутри дипазона по минутам 
-			  )
-				porta |= tmp;
-					
-	   }
-	}
-	return porta;
-}
-*/

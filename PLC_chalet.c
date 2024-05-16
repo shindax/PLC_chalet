@@ -28,17 +28,9 @@ void main()
   SSPIE = 0;
   
 
-if( 0 ){
-		time.hour = 0x15;
-		time.minute = 0x03;
-		time.day = 3;
-//		PORTA = 0b00010000 | checkInRangeTimeSettings();
-  		while( 1 );
-}
-else{
-	    read_time( ( date_time * ) & time );
+read_time( ( date_time * ) & time );
 
-		if( 1 ){
+if( 0 ){ // ”становка времени с сохранением состо€ни€ выходов
 //			time.hour = 0x08;
 //			time.minute = 0x22;
 //			time.day = 4;
@@ -46,16 +38,13 @@ else{
 //			time.month = 0x05;
 			time.year = ( time.year & 0xF0 ) | 0x04;
 			write_time( ( date_time * ) & time );
-		}
+}
 
 // ≈сли напр€жение отключалось, восстанавливаем состо€ние выходов
 // сохраненное в старшем ниббле байта года
 
-		PORTA = 0b00010000 | ( time.year >> 4 ); 
+	PORTA = 0b00010000 | ( time.year >> 4 ); 
 
-		//| checkInRangeTimeSettings();
-}
- 
   
    display_init();
    __delay_ms(100);
