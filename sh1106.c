@@ -16,17 +16,18 @@ void display_data(uint8_t data){
     i2c_Stop();
 }
 
-void display_init(void){
-    i2c_Init( I2C_SPEED );   	/*Display Off*/
-    display_command(0xAE);  /*Set Lower Column Address*/ 
-    display_command(0x02);  /*set higher column address*/  
-    display_command(0x10);  /*set display start line*/ 
-    display_command(0x40);  /*set page address*/ 
-    display_command(0xB0);  /*contrast control*/  
-    display_command(0x81);  /*set segment re-map*/
+void display_init(void)
+{
+    i2c_Init( I2C_SPEED ); 	
+    display_command(0xAE);  /*Display Off*/
+    display_command(0x02);  /*Set Lower Column Address*/  
+    display_command(0x10);  /*set higher column address*/  
+    display_command(0x40);  /*set display start line*/ 
+    display_command(0xB0);  /*set page address*/ 
+    display_command(0x81);  /*contrast control*/ 
     display_command(0xFF);   
-    display_command(0xA1);  /*normal - reverse*/   
-    display_command(0xA6);  /*multiplex ratio*/  
+    display_command(0xA1);  /*from left to right*/
+    display_command(0xA6);  /*normal - mode*/  
     display_command(0xA8);  /*1/64 duty*/  
     display_command(0x3F);  /*enable charge pump*/  
     display_command(0xAD);  /*set Vpp 8V 0x30 - 0x33*/
@@ -46,13 +47,11 @@ void display_init(void){
     display_command(0xAF);  //display ON
 }
 
-
 void display_sleep(void)
 {
     i2c_Init( I2C_SPEED );   	/*Display Off*/
     display_command(0xAE);  //sleep
 }
-
 
 void display_xy(uint8_t x, uint8_t y)
 {

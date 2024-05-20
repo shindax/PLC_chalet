@@ -18,14 +18,14 @@ void InitSFRS( void )
   T0IF   = 0 ;
  }
 
-void checkTimeSettings( void )
+unsigned char checkTimeSettings( unsigned char * porta )
 {
-	unsigned char channel, porta, tmp, day, stateChanged = 0;
+	unsigned char channel, tmp, day, stateChanged = 0;
 	unsigned int i = 0;
 	date_time locDateTimeFrom;
 	date_time locDateTimeTo;
 
-	porta = PORTA;
+	* porta = PORTA;
 
 	for( i = 0 ; i < 0x256; i += 8 ){
 		getEepromTimeSetting( i, & channel, & day, & locDateTimeFrom, & locDateTimeTo );
@@ -40,23 +40,19 @@ void checkTimeSettings( void )
 // Проверка времени включения
 			if(	time.hour == locDateTimeFrom.hour && time.minute == locDateTimeFrom.minute ){
 				stateChanged = 1;
-				porta |= tmp;
+				* porta |= tmp;
 			}
 // Проверка времени выключения
 			if( locDateTimeTo.hour == time.hour && locDateTimeTo.minute == time.minute ){
 				stateChanged = 1;
-				porta &= ~ tmp;
+				* porta &= ~ tmp;
 			}
   		}     
 	}// for( i = 0 ; i < 256; i += 8 ){
 	
-	if( stateChanged ){
-		PORTA = porta;
-// Сохраненяем состояние выходов в старшем ниббле байта года
-		time.year |= porta << 4 ;
-		write_time( ( date_time * ) & time );
-	}
-}// void checkTimeSettings( void )
+	return stateChanged ;
+
+}// unsigned char checkTimeSettings( unsigned char )
 
 void getEepromTimeSetting( unsigned char addr, unsigned char * channel, unsigned char * day, date_time * from, date_time * to )
 {
@@ -66,4 +62,51 @@ void getEepromTimeSetting( unsigned char addr, unsigned char * channel, unsigned
 	from -> minute = eeprom_read( addr + 3 );
 	to -> hour = eeprom_read( addr + 4 );
 	to -> minute = eeprom_read( addr + 5 );
+}
+
+unsigned int getMinutes( date_time var )
+{ 
+	return var.hour * 60 + var.minute; 
+}
+
+unsigned char checkInRangeTimeSettings( void )
+{
+	date_time dateTimeFrom;
+	date_time dateTimeTo;
+	unsigned char channel = 0, porta = 0, tmp = 0, day = 0;
+	unsigned int i = 0, minutes;
+
+	for( i = 0 ; i < 256; i += 8 ){
+		getEepromTimeSetting( i, & channel, & day, & dateTimeFrom, & dateTimeTo );
+
+		if( channel > 4 )// channel is too big or setting is empty
+			continue;
+
+		if( 
+			( day & ( 1 << time.day - 1 )) 
+				&& 
+			( day & ( 1 << time.day - 1 ))
+		  ){
+			tmp = 1 << channel - 1;
+
+			minutes = getMinutes( time );
+
+			if( 
+				( // Переход через 00:00
+					( dateTimeFrom.hour > dateTimeTo.hour ) 
+						&& 
+					( minutes >= getMinutes( dateTimeFrom ) || minutes < getMinutes( dateTimeTo ))
+				)
+					||
+				( getMinutes( dateTimeFrom ) <= minutes && getMinutes( dateTimeTo ) > minutes )
+			  )
+				porta |= tmp;
+	   }
+	}
+	return porta;
+}
+
+unsigned char checkBarrelSensor( unsigned char porta )
+{
+	return BARREL_IS_FULL ? porta & 0xFE : porta; // Маскируем выходной бит PORTA управляющий клапаном бочки
 }

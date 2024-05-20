@@ -3,7 +3,7 @@
 void displayOutputs( void )
 {
 	unsigned char pos = 40;
-	display_char_8x16( pos				 , OUTPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + OUTPUT_1 );
+	display_char_8x16( pos				 , OUTPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + FILL_BARREL_OUTPUT );
 	display_char_8x16( pos += SYMBOL_SIZE, OUTPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + OUTPUT_2 );
 	display_char_8x16( pos += SYMBOL_SIZE, OUTPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + OUTPUT_3 );
 	display_char_8x16( pos += SYMBOL_SIZE, OUTPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + OUTPUT_4 );
@@ -17,7 +17,7 @@ void displayInputs( void )
 	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_3 );
 	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_4 );
 	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_5 );
-	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_6 );
+	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + BARREL_IS_FULL  );
 	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_7 );
 	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_8 );
 }
@@ -94,10 +94,7 @@ void displayDate( void )
 	display_char_8x16( pos += 8, DATE_LINE, ( unsigned char ) 28 ); // 2
 	display_char_8x16( pos += 8, DATE_LINE, ( unsigned char ) 26 ); // 0
 
-//	display_char_8x16( pos += 8, DATE_LINE, getDisplayableDigit( ( unsigned char )( time.year >> 4 )));
-
-	display_char_8x16( pos += 8, DATE_LINE, getDisplayableDigit( ( unsigned char )0x02 ));
+	display_char_8x16( pos += 8, DATE_LINE, getDisplayableDigit( ( unsigned char )( time.year >> 4 )));
 	display_char_8x16( pos += 8, DATE_LINE, getDisplayableDigit( ( unsigned char )( time.year & 0x0F )));
-
 }
 

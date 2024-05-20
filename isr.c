@@ -22,10 +22,10 @@ static void interrupt isr( void )
 		if( heartBeatTick >= 100 ){ 
 			heartBeatTick = 0;
 			HEART_BEAT = 0;
-			dataUpdateNeed = 1;
+			dataUpdateNeeded = 1;
 		}
 		if( tick == 25 ){
-				displayUpdateNeed = 1;
+				displayUpdateNeeded = 1;
 				tick = 0;
 		}
 

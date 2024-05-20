@@ -1,7 +1,7 @@
 #include "system.h"
 
-volatile unsigned char displayUpdateNeed = 0;
-volatile unsigned char dataUpdateNeed = 0;
+volatile unsigned char displayUpdateNeeded = 0;
+volatile unsigned char dataUpdateNeeded = 0;
 volatile unsigned char WebServerReady = 0;
 volatile unsigned char usartData = 0;
 volatile date_time time;
@@ -14,6 +14,7 @@ void main()
 {
   unsigned char minute = 0xFF;
   unsigned char hour = 0xFF;
+  unsigned char porta, portaChanged = 0;
 
   InitPorts();
   InitSFRS();
@@ -29,20 +30,20 @@ void main()
 
 read_time( ( date_time * ) & time );
 
-if( 0 ){ // ”становка времени с сохранением состо€ни€ выходов
-//			time.hour = 0x08;
-//			time.minute = 0x22;
-//			time.day = 4;
-//			time.date = 0x16;
-//			time.month = 0x05;
-			time.year = ( time.year & 0xF0 ) | 0x04;
+if( 0 ){ // ”становка времени
+			time.hour = 0x13;
+			time.minute = 0x15;
+			time.day = 1;
+			time.date = 0x20;
+			time.month = 0x05;
+			time.year = CURRENT_YEAR;
 			write_time( ( date_time * ) & time );
 }
 
 // ≈сли напр€жение отключалось, восстанавливаем состо€ние выходов
-// сохраненное в старшем ниббле байта года
-	PORTA = 0b00010000 | ( time.year >> 4 ); 
- 
+	porta = checkInRangeTimeSettings();
+	PORTA = 0b00010000 | porta;
+
    display_init();
    __delay_ms(100);
    display_clear(0);
@@ -50,12 +51,12 @@ if( 0 ){ // ”становка времени с сохранением состо€ни€ выходов
   GIE  = 1 ;
 
   while(1){
-		if( displayUpdateNeed ){
+		if( displayUpdateNeeded ){
+			PORTA = checkBarrelSensor( porta );
 			read_time( ( date_time * ) & time );
-			if( time.minute != minute && time.minute <= 0x59 ){// check settings one time per minute only
+			if( ( time.minute != minute && time.minute <= 0x59 ) ){// check settings one time per minute only
 				minute = time.minute;
-				checkTimeSettings();
-				displayOutputs();
+				portaChanged = checkTimeSettings( & porta );
 			}
 
 			if( time.hour != hour && time.hour <= 0x23 ){// check settings one time per hour only
@@ -67,14 +68,20 @@ if( 0 ){ // ”становка времени с сохранением состо€ни€ выходов
 			displayTemp();
 			displayInputs();
 
-			displayUpdateNeed = 0;
-	}
+			if( portaChanged ){
+				PORTA = porta;
+				portaChanged = 0;
+			}
 
+			displayOutputs();
+			displayUpdateNeeded = 0;
+	
+	}// if( displayUpdateNeeded ){
 
-		if( dataUpdateNeed ){
+		if( dataUpdateNeeded ){
 			DS18B20Convert();
 			temp = DS18B20CalculateTemperature();
-			dataUpdateNeed = 0;
+			dataUpdateNeeded = 0;
+		}
 	}
-  }
 }
