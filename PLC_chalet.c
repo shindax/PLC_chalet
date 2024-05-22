@@ -3,7 +3,10 @@
 volatile unsigned char displayUpdateNeeded = 0;
 volatile unsigned char dataUpdateNeeded = 0;
 volatile unsigned char WebServerReady = 0;
-volatile unsigned char usartData = 0;
+
+volatile unsigned char usartData[ USART_PACKET_SIZE ];
+volatile unsigned char usartDataPtr = 0;
+
 volatile date_time time;
 volatile unsigned long temp;
 
@@ -14,29 +17,29 @@ void main()
 {
   unsigned char minute = 0xFF;
   unsigned char hour = 0xFF;
-  unsigned char porta, portaChanged = 0;
+  unsigned char porta = 0, portaChanged = 0;
 
   InitPorts();
   InitSFRS();
   USARTInit(9600);
 
   RCIF = 0;
-  RCIE = 0;
+  RCIE = 1;
 
-  PEIE = 0;
+  PEIE = 1;
   RBIE = 0;
   INTE = 0;
-  SSPIE = 0;
+//  SSPIE = 1;
 
 read_time( ( date_time * ) & time );
 
 if( 0 ){ // Установка времени
-			time.hour = 0x13;
-			time.minute = 0x15;
-			time.day = 1;
-			time.date = 0x20;
-			time.month = 0x05;
-			time.year = CURRENT_YEAR;
+			time.hour = 0x11;
+			time.minute = 0x32;
+//			time.day = 1;
+//			time.date = 0x20;
+//			time.month = 0x05;
+//			time.year = CURRENT_YEAR;
 			write_time( ( date_time * ) & time );
 }
 
@@ -83,5 +86,33 @@ if( 0 ){ // Установка времени
 			temp = DS18B20CalculateTemperature();
 			dataUpdateNeeded = 0;
 		}
+
+	if( usartDataPtr == USART_PACKET_SIZE ){
+		usartDataPtr = 0;
+		if( usartData[0] == 0x55 ){ // Установка времени
+			time.hour = usartData[4];
+			time.minute = usartData[5];
+			time.day = usartData[6];
+			time.date = usartData[3];
+			time.month = usartData[2];
+			time.year = usartData[1];
+			write_time( ( date_time * ) & time );
+/*	
+			eeprom_write(0x30, usartData[1]);
+			eeprom_write(0x31, usartData[2]);
+			eeprom_write(0x32, usartData[3]);
+			eeprom_write(0x33, usartData[4]);
+			eeprom_write(0x34, usartData[5]);
+			eeprom_write(0x35, usartData[6]);
+*/	
+			minute = 0xFF;
+	  		hour = 0xFF;
+			displayUpdateNeeded = 1;
+
+		}
+	  }
+
 	}
 }
+
+

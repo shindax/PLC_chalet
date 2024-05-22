@@ -64,10 +64,13 @@
 #define DATE_LINE						2
 #define OUTPUT_LINE						3
 
+#define USART_PACKET_SIZE				8
+
 extern volatile unsigned char displayUpdateNeeded;
 extern volatile unsigned char dataUpdateNeeded;
 extern volatile unsigned char WebServerReady;
-extern volatile unsigned char usartData;
+extern volatile unsigned char usartData[];
+extern volatile unsigned char usartDataPtr;
 extern volatile date_time time;
 extern volatile unsigned long temp;
 

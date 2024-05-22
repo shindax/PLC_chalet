@@ -66,7 +66,7 @@ void getEepromTimeSetting( unsigned char addr, unsigned char * channel, unsigned
 
 unsigned int getMinutes( date_time var )
 { 
-	return var.hour * 60 + var.minute; 
+	return (( int )var.hour) * 60 + ( int )var.minute; 
 }
 
 unsigned char checkInRangeTimeSettings( void )
@@ -101,6 +101,7 @@ unsigned char checkInRangeTimeSettings( void )
 				( getMinutes( dateTimeFrom ) <= minutes && getMinutes( dateTimeTo ) > minutes )
 			  )
 				porta |= tmp;
+
 	   }
 	}
 	return porta;
@@ -108,5 +109,5 @@ unsigned char checkInRangeTimeSettings( void )
 
 unsigned char checkBarrelSensor( unsigned char porta )
 {
-	return BARREL_IS_FULL ? porta & 0xFE : porta; // Маскируем выходной бит PORTA управляющий клапаном бочки
+	return BARREL_IS_FULL ? porta & 0xFE : 0b00010000 | porta; // Маскируем выходной бит PORTA управляющий клапаном бочки
 }

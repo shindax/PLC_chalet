@@ -6,9 +6,10 @@ static void interrupt isr( void )
 	static unsigned char addr = 0;
     
 	if( RCIF && RCIE ){
-		usartData = RCREG;
-	    while(!TRMT);
-    	TXREG = usartData;
+		usartData[ usartDataPtr ++ ] = RCREG;
+		HEART_BEAT = 0;
+//	    while(!TRMT);
+//    	TXREG = usartData;
 	}
 
     if( TMR0IF && TMR0IE )        // Was it a timer 0 overflow?
@@ -17,11 +18,11 @@ static void interrupt isr( void )
     	TMR0   = TMR0_PRELOAD;
 		tick ++;
 		heartBeatTick ++;
-		if( heartBeatTick == 2 )	
-				HEART_BEAT = 1;
+//		if( heartBeatTick == 2 )	
+//				HEART_BEAT = 1;
 		if( heartBeatTick >= 100 ){ 
 			heartBeatTick = 0;
-			HEART_BEAT = 0;
+//			HEART_BEAT = 0;
 			dataUpdateNeeded = 1;
 		}
 		if( tick == 25 ){
