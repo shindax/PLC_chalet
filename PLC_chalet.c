@@ -6,6 +6,7 @@ volatile unsigned char WebServerReady = 0;
 
 volatile unsigned char usartData[ USART_PACKET_SIZE ];
 volatile unsigned char usartDataPtr = 0;
+volatile unsigned char outputsMode[4];
 
 volatile date_time time;
 volatile unsigned long temp;
@@ -21,42 +22,30 @@ void main()
 
   InitPorts();
   InitSFRS();
-  USARTInit(9600);
 
-  RCIF = 0;
-  RCIE = 1;
-
-  PEIE = 1;
-  RBIE = 0;
-  INTE = 0;
-//  SSPIE = 1;
-
-read_time( ( date_time * ) & time );
-
-if( 0 ){ // Установка времени
-			time.hour = 0x11;
-			time.minute = 0x32;
-//			time.day = 1;
-//			time.date = 0x20;
-//			time.month = 0x05;
-//			time.year = CURRENT_YEAR;
-			write_time( ( date_time * ) & time );
-}
+  read_time( ( date_time * ) & time );
+  getOutputsMode();
 
 // Если напряжение отключалось, восстанавливаем состояние выходов
-	porta = checkInRangeTimeSettings();
-	PORTA = 0b00010000 | porta;
+	portaCheck( & porta );
 
    display_init();
    __delay_ms(100);
    display_clear(0);
 
+  usartDataPtr = 0;
+  dataUpdateNeeded = 1;
+  LED_OFF;
+
+  USARTInit(9600);
+  RCIE = 1;
   GIE  = 1 ;
 
   while(1){
 		if( displayUpdateNeeded ){
-			PORTA = checkBarrelSensor( porta );
+			portaCheck( & porta );
 			read_time( ( date_time * ) & time );
+
 			if( ( time.minute != minute && time.minute <= 0x59 ) ){// check settings one time per minute only
 				minute = time.minute;
 				portaChanged = checkTimeSettings( & porta );
@@ -89,7 +78,7 @@ if( 0 ){ // Установка времени
 
 	if( usartDataPtr == USART_PACKET_SIZE ){
 		usartDataPtr = 0;
-		if( usartData[0] == 0x55 ){ // Установка времени
+		if( usartData[0] == USART_TIME_SETTING ){ // Установка времени
 			time.hour = usartData[4];
 			time.minute = usartData[5];
 			time.day = usartData[6];
@@ -97,22 +86,29 @@ if( 0 ){ // Установка времени
 			time.month = usartData[2];
 			time.year = usartData[1];
 			write_time( ( date_time * ) & time );
-/*	
-			eeprom_write(0x30, usartData[1]);
-			eeprom_write(0x31, usartData[2]);
-			eeprom_write(0x32, usartData[3]);
-			eeprom_write(0x33, usartData[4]);
-			eeprom_write(0x34, usartData[5]);
-			eeprom_write(0x35, usartData[6]);
-*/	
-			minute = 0xFF;
-	  		hour = 0xFF;
-			displayUpdateNeeded = 1;
+			minute = hour = portaCheck( & porta );
+			LED_OFF;
 
-		}
-	  }
+		}// if( usartData[0] == USART_TIME_SETTING ){ // Установка времени
 
-	}
+		if( usartData[0] == USART_OUTPUTS_MODE_REQUEST ){ // Запрос на выдачу режима выходов
+			usartData[0] = USART_OUTPUTS_MODE_RESPONSE;
+			usartData[1] = outputsMode[0];
+			usartData[2] = outputsMode[1];
+			usartData[3] = outputsMode[2];
+			usartData[4] = outputsMode[3];
+			sendBufToUsart();
+			LED_OFF;
+		}// if( usartData[0] == USART_OUTPUTS_MODE_REQUEST  ){ // Запрос на выдачу состояний выходов
+
+		if( usartData[0] == USART_OUTPUTS_MODE_SET ){ // Изменение режима управления выходами
+			putOutputsMode();
+			minute = hour = portaCheck( & porta );
+			LED_OFF;
+		}// if( usartData[0] == USART_OUTPUTS_SET ){ // Изменение состояний выходов
+	  }// if( usartDataPtr == USART_PACKET_SIZE ){
+	}// while(1){
 }
+
 
 

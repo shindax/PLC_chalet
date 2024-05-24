@@ -42,3 +42,28 @@ char USARTReadChar(void)
     while(!RCIF);
     return RCREG;
 }
+
+unsigned char USARTCheckOERR(void)
+{
+        if(OERR)        /* re-enable after overrun error */
+        {
+           CREN = 0;
+           CREN = 1;
+           return 1;
+        }
+        return 0;
+}
+
+unsigned char USARTGetFERR(void)
+{
+        while(!RCIF)
+                continue;
+        return FERR;    /* RCIF is not cleared until RCREG is read */
+}
+
+unsigned char USARTGetByte(void)
+{
+        while(!RCIF)
+          continue; /* set when register is not empty */
+        return RCREG;   /* RXD9 and FERR are gone now */
+}

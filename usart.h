@@ -8,5 +8,8 @@ unsigned char USART_TSR_control(void);
 void USART_print(unsigned  char *string);
 unsigned char USARTIsAvailable(void);
 char USARTReadChar(void);
+unsigned char USARTGetByte(void);
+unsigned char USARTGetFERR(void);
+unsigned char USARTCheckOERR(void);
 
 #endif

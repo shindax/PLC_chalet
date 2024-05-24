@@ -15,7 +15,10 @@
 
 #define CURRENT_YEAR	0x24
 
-#define HEART_BEAT	RA4
+#define LED			RA4
+#define LED_ON		LED = 0
+#define LED_OFF		LED = 1
+
 #define TMR0_PRELOAD 176
 
 #define FILL_BARREL_OUTPUT	RA0
@@ -55,6 +58,9 @@
 #define BOLD_DEGREE_SYMBOL				48
 #define SPACE_SYMBOL					0
 
+#define MANUAL_ON						50
+#define MANUAL_OFF						51
+
 #define DIGIT_TABLE_SHIFT				26
 #define BOLD_DIGIT_TABLE_SHIFT			38
 #define SYMBOL_SIZE						16
@@ -65,11 +71,16 @@
 #define OUTPUT_LINE						3
 
 #define USART_PACKET_SIZE				8
+#define USART_OUTPUTS_MODE_REQUEST		0x11
+#define USART_OUTPUTS_MODE_RESPONSE		0x22
+#define USART_OUTPUTS_MODE_SET			0x33
+#define USART_TIME_SETTING				0x55
 
 extern volatile unsigned char displayUpdateNeeded;
 extern volatile unsigned char dataUpdateNeeded;
 extern volatile unsigned char WebServerReady;
 extern volatile unsigned char usartData[];
+extern volatile unsigned char outputsMode[];
 extern volatile unsigned char usartDataPtr;
 extern volatile date_time time;
 extern volatile unsigned long temp;
@@ -96,6 +107,12 @@ void getData( void );
 unsigned char getDisplayableDigit( unsigned char digit );
 unsigned char checkInRangeTimeSettings( void );
 unsigned char checkBarrelSensor( unsigned char );
+void sendBufToUsart( void );
+void updateOutputsMode( void );
+unsigned char portaCheck( unsigned char * );
+void getOutputsMode( void );
+void putOutputsMode( void );
+
 
 __CONFIG ( XT & WDTDIS & PWRTEN & BORDIS & LVPDIS & DUNPROT & WRTDIS & DEBUGDIS & UNPROTECT);
 

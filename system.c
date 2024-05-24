@@ -16,18 +16,27 @@ void InitSFRS( void )
   TMR0 = TMR0_PRELOAD ;     // (256-176)*( 1/((4096000/4)/256)) = 20mS
   T0IE = 1 ;
   T0IF   = 0 ;
+  
+  RCREG;
+  RCIF = 0;
+  RCIE = 0;
+
+  PEIE = 1;
+  RBIE = 0;
+  INTE = 0;
+  SSPIE = 0;
  }
 
 unsigned char checkTimeSettings( unsigned char * porta )
 {
 	unsigned char channel, tmp, day, stateChanged = 0;
-	unsigned int i = 0;
+	unsigned char i = 0;
 	date_time locDateTimeFrom;
 	date_time locDateTimeTo;
 
 	* porta = PORTA;
 
-	for( i = 0 ; i < 0x256; i += 8 ){
+	for( i = 0 ; i < 0xF8; i += 8 ){
 		getEepromTimeSetting( i, & channel, & day, & locDateTimeFrom, & locDateTimeTo );
 
 		if( channel > 4 )// channel is too big or setting is empty
@@ -76,7 +85,7 @@ unsigned char checkInRangeTimeSettings( void )
 	unsigned char channel = 0, porta = 0, tmp = 0, day = 0;
 	unsigned int i = 0, minutes;
 
-	for( i = 0 ; i < 256; i += 8 ){
+	for( i = 0 ; i < 0xFF; i += 8 ){
 		getEepromTimeSetting( i, & channel, & day, & dateTimeFrom, & dateTimeTo );
 
 		if( channel > 4 )// channel is too big or setting is empty
@@ -90,7 +99,6 @@ unsigned char checkInRangeTimeSettings( void )
 			tmp = 1 << channel - 1;
 
 			minutes = getMinutes( time );
-
 			if( 
 				( // Переход через 00:00
 					( dateTimeFrom.hour > dateTimeTo.hour ) 
@@ -103,11 +111,65 @@ unsigned char checkInRangeTimeSettings( void )
 				porta |= tmp;
 
 	   }
+	}// for( i = 0 ; i < 0xFF; i += 8 ){
+
+	for( i = 0; i < 4; i ++ ){
+		if( outputsMode[i] == 0 )
+			porta &= ~( 1 << i );
+			else
+				if( outputsMode[i] == 1 )
+						porta |= ( 1 << i );
 	}
+
 	return porta;
 }
 
 unsigned char checkBarrelSensor( unsigned char porta )
 {
-	return BARREL_IS_FULL ? porta & 0xFE : 0b00010000 | porta; // Маскируем выходной бит PORTA управляющий клапаном бочки
+	if( LED ) 
+		porta |= 1 << 4; // Сохранить состояние бита LED
+	return BARREL_IS_FULL ? porta & 0xFE : porta ; // Маскируем выходной бит PORTA управляющий клапаном бочки
+}
+
+void sendBufToUsart( void )
+{
+	LED_ON;
+	for( unsigned char i = 0; i < 8; i ++ ){
+		while(!TRMT);
+    	TXREG = usartData[i];
+	}
+	LED_OFF;
+}
+
+void updateOutputsMode( void )
+{
+}
+
+unsigned char portaCheck( unsigned char * porta )
+{
+	* porta = checkInRangeTimeSettings();
+	PORTA = 0b00010000 | checkBarrelSensor( * porta );
+	displayUpdateNeeded = 1;
+	return 0xFF;
+}
+
+void getOutputsMode( void )
+{
+	outputsMode[0] = ext_eeprom_read_byte( 0 );
+	outputsMode[1] = ext_eeprom_read_byte( 1 );
+	outputsMode[2] = ext_eeprom_read_byte( 2 );
+	outputsMode[3] = ext_eeprom_read_byte( 3 );
+}
+
+void putOutputsMode( void )
+{
+    ext_eeprom_write_byte( 0, usartData[1] );
+    ext_eeprom_write_byte( 1, usartData[2] );
+    ext_eeprom_write_byte( 2, usartData[3] );
+    ext_eeprom_write_byte( 3, usartData[4] );
+
+	outputsMode[0] = usartData[1];
+	outputsMode[1] = usartData[2];
+	outputsMode[2] = usartData[3];
+	outputsMode[3] = usartData[4];
 }
