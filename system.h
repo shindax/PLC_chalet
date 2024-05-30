@@ -79,6 +79,7 @@
 #define USART_DISPLAY_ON						0x88
 #define USART_DISPLAY_OFF						0x99
 #define USART_GET_OUTPUTS_STATE					0xAA
+#define USART_GET_TIME_REQUEST          		0xBB
 
 extern volatile unsigned char displayUpdateNeeded;
 extern volatile unsigned char dataUpdateNeeded;

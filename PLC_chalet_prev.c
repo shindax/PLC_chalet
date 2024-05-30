@@ -35,9 +35,7 @@ void main()
   displayUpdateNeeded = 1;
   LED_OFF;
 
-//  USARTInit(9600);
-  USARTInit(19200);
-
+  USARTInit(9600);
   RCIE = 1;
 
   porta = checkInRangeTimeSettings();
@@ -93,20 +91,8 @@ void main()
 								time.month = usartData[2];
 								time.year = usartData[1];
 								write_time( ( date_time * ) & time );
-								hour = 0xFF;
-								minute = 0xFF;
 								displayUpdateNeeded = 1;
 								portaChanged = 1;
-								LED_OFF;
-								break;
-
-			case USART_OUTPUTS_MODE_REQUEST : // Запрос на выдачу режима выходов
-								getOutputsMode();
-								usartData[1] = outputsMode[0];
-								usartData[2] = outputsMode[1];
-								usartData[3] = outputsMode[2];
-								usartData[4] = outputsMode[3];
-								sendBufToUsart();
 								LED_OFF;
 								break;
 
@@ -175,16 +161,6 @@ void main()
 			case USART_DISPLAY_OFF : // Вылючить дисплей
 								display_sleep();
 								LED_OFF;
-								break;
-
-			case USART_GET_TIME_REQUEST : // Запрос времени
-								usartData[0] = time.year;
-								usartData[1] = time.month;
-								usartData[2] = time.date;
-								usartData[3] = time.hour;
-								usartData[4] = time.minute;
-								usartData[5] = time.day;
-								sendBufToUsart();
 								break;
 		}// switch( usartData[0] ){
 	  }// if( usartDataPtr == USART_PACKET_SIZE ){

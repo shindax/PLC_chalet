@@ -17,7 +17,7 @@ String makeChannelSelectOption( unsigned char ch )
 {
   unsigned char i;
   String str = "";
-  String strArr[5] = {"OFF", "1", "2", "3", "4"};
+  String strArr[5] = {"ВЫКЛ", "1", "2", "3", "4"};
   if( ch == 0xFF )
     ch = 0;
   for( i = 0 ; i < 5; i ++ ){
@@ -79,7 +79,7 @@ String setAlarmSettingsBankHtml( unsigned char bank )
 {
   String page = getHtmlHeader();
   page += "<body>";
-  page += "<h1>Уставки выходов.</h1>"; 
+  page += "<h1>Уставки выходов</h1>"; 
   page += "<h2>Банк ";
   page += bank;
   page += "</h2>";  

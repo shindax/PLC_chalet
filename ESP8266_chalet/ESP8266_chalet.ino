@@ -22,10 +22,13 @@ const unsigned char USART_OUTPUT_ALARM_SETTINGS_SET = 0x77;
 const unsigned char DISPLAY_ON                      = 0x88;
 const unsigned char DISPLAY_OFF                     = 0x99;
 const unsigned char USART_GET_OUTPUTS_STATE					= 0xAA;
+const unsigned char USART_GET_TIME_REQUEST          = 0xBB;
 
 void setup()
 {
-  Serial.begin(9600);
+//  Serial.begin(9600);
+  Serial.begin(19200);
+
   WiFi.mode(WIFI_AP);         // Wi-Fi AP mode
   delay(1000);            // setup AP mode
   WiFi.softAPConfig(local_ip, gateway, subnet); //  predefined IP address
@@ -168,6 +171,8 @@ void setAlarmSettingsBank4()
 void setDateTime()
 {
   int argCount = server.args();
+  unsigned char tempUsartBuf[8];  
+
   if( argCount ){
     datetime = server.arg("datetime");
     dayOfWeek = server.arg("day");
@@ -182,6 +187,24 @@ void setDateTime()
     usartBuf[6] = dayOfWeek.toInt();
     usartBuf[7] = 0xFF;
     Serial.write( usartBuf, 8 );
+  }
+  else{
+        tempUsartBuf[0] = USART_GET_TIME_REQUEST;
+        Serial.write( tempUsartBuf, 8 );
+        delay(50);
+        Serial.setTimeout(500);
+        Serial.readBytes( tempUsartBuf, 8 );
+        datetime = "20";
+        datetime += hex2dec( tempUsartBuf[0] );
+        datetime += "-";
+        datetime += hex2dec( tempUsartBuf[1] );
+        datetime += "-";
+        datetime += hex2dec( tempUsartBuf[2] );
+        datetime += " ";
+        datetime += hex2dec( tempUsartBuf[3] );
+        datetime += ":";
+        datetime += hex2dec( tempUsartBuf[4] );
+        dayOfWeek = tempUsartBuf[5];
   }
   server.send(200, "text/html", setDateTimeHtml());
 }
@@ -227,6 +250,17 @@ unsigned char getDatetimeValue( char * Buf, int offset )
 unsigned char dec2hex( unsigned char ch )
 {
   return ch / 10 * 16 + ( ch % 10 );
+}
+
+String hex2dec( unsigned char ch )
+{
+  String str = "0";
+  unsigned char temp = ch / 16 * 10 + ( ch % 16 );
+  if( temp < 10 )
+    str += temp;
+      else
+        str = temp;
+  return str;
 }
 
 void loop()
