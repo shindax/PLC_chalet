@@ -19,8 +19,9 @@ const unsigned char USART_OUTPUTS_MODE_SET = 0x33;
 const unsigned char USART_TIME_SETTING = 0x55;
 const unsigned char USART_OUTPUTS_ALARM_SETTINGS_REQUEST = 0x66;
 const unsigned char USART_OUTPUT_ALARM_SETTINGS_SET = 0x77;
-const unsigned char DISPLAY_ON                      = 0x88;
-const unsigned char DISPLAY_OFF                     = 0x99;
+const unsigned char USART_DISPLAY_ON                = 0x88;
+const unsigned char USART_DISPLAY_OFF               = 0x99;
+const unsigned char USART_DISPLAY_REFRESH           = 0xCC;
 const unsigned char USART_GET_OUTPUTS_STATE					= 0xAA;
 const unsigned char USART_GET_TIME_REQUEST          = 0xBB;
 
@@ -47,6 +48,7 @@ void setup()
   server.on("/display", display);
   server.on("/displayOn", displayOn);
   server.on("/displayOff", displayOff);
+  server.on("/displayRefresh", displayRefresh);
   server.on("/outputStates", outputStates);
   pinMode(LEDGpin, OUTPUT);       // define LED pins as output
   pinMode(2, OUTPUT);       // define LED pins as output
@@ -65,7 +67,7 @@ void display()
 void displayOn()
 {
   unsigned char tempUsartBuf[8];  
-  tempUsartBuf[0] = DISPLAY_ON;
+  tempUsartBuf[0] = USART_DISPLAY_ON;
   Serial.write( tempUsartBuf, 8 );
   server.send(200, "text.html", displayHtml());
 }
@@ -73,7 +75,15 @@ void displayOn()
 void displayOff()
 {
   unsigned char tempUsartBuf[8];  
-  tempUsartBuf[0] = DISPLAY_OFF;
+  tempUsartBuf[0] = USART_DISPLAY_OFF;
+  Serial.write( tempUsartBuf, 8 );
+  server.send(200, "text.html", displayHtml());
+}
+
+void displayRefresh()
+{
+  unsigned char tempUsartBuf[8];  
+  tempUsartBuf[0] = USART_DISPLAY_REFRESH;
   Serial.write( tempUsartBuf, 8 );
   server.send(200, "text.html", displayHtml());
 }

@@ -47,7 +47,13 @@ void display_init(void)
     display_command(0xAF);  //display ON
 }
 
-void display_sleep(void)
+void display_on(void)
+{
+    i2c_Init( I2C_SPEED );   	/*Display Off*/
+    display_command(0xAF);  //sleep
+}
+
+void display_off(void)
 {
     i2c_Init( I2C_SPEED );   	/*Display Off*/
     display_command(0xAE);  //sleep

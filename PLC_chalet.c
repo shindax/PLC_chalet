@@ -97,7 +97,6 @@ void main()
 								minute = 0xFF;
 								displayUpdateNeeded = 1;
 								portaChanged = 1;
-								LED_OFF;
 								break;
 
 			case USART_OUTPUTS_MODE_REQUEST : // Запрос на выдачу режима выходов
@@ -107,7 +106,6 @@ void main()
 								usartData[3] = outputsMode[2];
 								usartData[4] = outputsMode[3];
 								sendBufToUsart();
-								LED_OFF;
 								break;
 
 			case USART_GET_OUTPUTS_STATE: // Запрос на выдачу состояния выходов
@@ -121,7 +119,6 @@ void main()
 								usartData[6] = RA2;
 								usartData[7] = RA3;
 								sendBufToUsart();
-								LED_OFF;
 								break;
 
 			case USART_OUTPUTS_ALARM_SETTINGS_REQUEST : // Запрос на выдачу уставок выходов
@@ -135,7 +132,6 @@ void main()
 								usartData[5] = eeprom_read( tempAddr ++ );			
 								usartData[6] = eeprom_read( tempAddr ++ );
 								sendBufToUsart();
-								LED_OFF;
 								break;
 
 			case USART_OUTPUT_ALARM_SETTINGS_SET : // Запись уставок выходов
@@ -151,30 +147,30 @@ void main()
 					
 								displayUpdateNeeded = 1;
 								portaChanged = 1;
-								LED_OFF;
 								break;
 
 			case USART_OUTPUTS_MODE_SET : // Изменение режима управления выходами
 								putOutputsMode();
 					  			porta = checkInRangeTimeSettings();
 					 			PORTA = 0x10 | checkBarrelSensor( porta );
-								LED_OFF;
+								break;
+
+			case USART_DISPLAY_REFRESH : // Обновить дисплей
+							    display_clear(0);
+					  			minute = 0xFF;
+					  			hour = 0xFF;
 								break;
 
 			case USART_DISPLAY_ON :// Включить дисплей
-								display_init();
-								__delay_ms(100);
-							    display_clear(0);
+							    display_on();
 								portaChanged = 1;
 								displayUpdateNeeded = 1;
 					  			minute = 0xFF;
 					  			hour = 0xFF;
-								LED_OFF;
 								break;
 
 			case USART_DISPLAY_OFF : // Вылючить дисплей
-								display_sleep();
-								LED_OFF;
+								display_off();
 								break;
 
 			case USART_GET_TIME_REQUEST : // Запрос времени
@@ -187,6 +183,7 @@ void main()
 								sendBufToUsart();
 								break;
 		}// switch( usartData[0] ){
+		LED_OFF;		
 	  }// if( usartDataPtr == USART_PACKET_SIZE ){
 	}// while(1){
 }// void main()
