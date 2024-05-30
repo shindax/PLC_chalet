@@ -71,10 +71,14 @@
 #define OUTPUT_LINE						3
 
 #define USART_PACKET_SIZE				8
-#define USART_OUTPUTS_MODE_REQUEST		0x11
-#define USART_OUTPUTS_MODE_RESPONSE		0x22
-#define USART_OUTPUTS_MODE_SET			0x33
-#define USART_TIME_SETTING				0x55
+#define USART_OUTPUTS_MODE_REQUEST				0x44
+#define USART_OUTPUTS_MODE_SET					0x33
+#define USART_TIME_SETTING						0x55
+#define USART_OUTPUTS_ALARM_SETTINGS_REQUEST	0x66
+#define USART_OUTPUT_ALARM_SETTINGS_SET			0x77
+#define USART_DISPLAY_ON						0x88
+#define USART_DISPLAY_OFF						0x99
+#define USART_GET_OUTPUTS_STATE					0xAA
 
 extern volatile unsigned char displayUpdateNeeded;
 extern volatile unsigned char dataUpdateNeeded;
@@ -112,8 +116,9 @@ void updateOutputsMode( void );
 unsigned char portaCheck( unsigned char * );
 void getOutputsMode( void );
 void putOutputsMode( void );
-
+unsigned char checkOutputsMode( unsigned char );
 
 __CONFIG ( XT & WDTDIS & PWRTEN & BORDIS & LVPDIS & DUNPROT & WRTDIS & DEBUGDIS & UNPROTECT);
 
 #endif	/* SYSTEM_H */
+

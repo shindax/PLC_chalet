@@ -3,8 +3,9 @@
 void InitPorts( void )
 {
   ADCON1 = 0B10000110 ; // All ports are digital
-  PORTB = 0xFF ; //
-  PORTC = 0 ;
+  PORTA = 0;
+  PORTB = 0;
+  PORTC = 0;
   TRISA  = 0;
   TRISB  = 0xFF ;
   TRISC  = 0xFF ;
@@ -113,6 +114,17 @@ unsigned char checkInRangeTimeSettings( void )
 	   }
 	}// for( i = 0 ; i < 0xFF; i += 8 ){
 
+	porta = checkOutputsMode( porta );
+
+	return porta;
+
+}// unsigned char checkInRangeTimeSettings( void )
+
+
+unsigned char checkOutputsMode( unsigned char porta )
+{
+	unsigned char i;
+	
 	for( i = 0; i < 4; i ++ ){
 		if( outputsMode[i] == 0 )
 			porta &= ~( 1 << i );
@@ -131,6 +143,7 @@ unsigned char checkBarrelSensor( unsigned char porta )
 	return BARREL_IS_FULL ? porta & 0xFE : porta ; // Маскируем выходной бит PORTA управляющий клапаном бочки
 }
 
+
 void sendBufToUsart( void )
 {
 	LED_ON;
@@ -145,28 +158,24 @@ void updateOutputsMode( void )
 {
 }
 
-unsigned char portaCheck( unsigned char * porta )
-{
-	* porta = checkInRangeTimeSettings();
-	PORTA = 0b00010000 | checkBarrelSensor( * porta );
-	displayUpdateNeeded = 1;
-	return 0xFF;
-}
-
 void getOutputsMode( void )
 {
-	outputsMode[0] = ext_eeprom_read_byte( 0 );
-	outputsMode[1] = ext_eeprom_read_byte( 1 );
-	outputsMode[2] = ext_eeprom_read_byte( 2 );
-	outputsMode[3] = ext_eeprom_read_byte( 3 );
+	outputsMode[0] = ext_eeprom_read_byte( 10 );
+	outputsMode[1] = ext_eeprom_read_byte( 11 );
+	outputsMode[2] = ext_eeprom_read_byte( 12 );
+	outputsMode[3] = ext_eeprom_read_byte( 13 );
 }
 
 void putOutputsMode( void )
 {
-    ext_eeprom_write_byte( 0, usartData[1] );
-    ext_eeprom_write_byte( 1, usartData[2] );
-    ext_eeprom_write_byte( 2, usartData[3] );
-    ext_eeprom_write_byte( 3, usartData[4] );
+    ext_eeprom_write_byte( 10, usartData[1] );
+	__delay_ms(10);
+    ext_eeprom_write_byte( 11, usartData[2] );
+	__delay_ms(10);
+    ext_eeprom_write_byte( 12, usartData[3] );
+	__delay_ms(10);
+    ext_eeprom_write_byte( 13, usartData[4] );
+	__delay_ms(10);
 
 	outputsMode[0] = usartData[1];
 	outputsMode[1] = usartData[2];

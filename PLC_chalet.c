@@ -7,7 +7,6 @@ volatile unsigned char WebServerReady = 0;
 volatile unsigned char usartData[ USART_PACKET_SIZE ];
 volatile unsigned char usartDataPtr = 0;
 volatile unsigned char outputsMode[4];
-
 volatile date_time time;
 volatile unsigned long temp;
 
@@ -19,6 +18,7 @@ void main()
   unsigned char minute = 0xFF;
   unsigned char hour = 0xFF;
   unsigned char porta = 0, portaChanged = 0;
+  unsigned int tempAddr;
 
   InitPorts();
   InitSFRS();
@@ -26,27 +26,29 @@ void main()
   read_time( ( date_time * ) & time );
   getOutputsMode();
 
-// Если напряжение отключалось, восстанавливаем состояние выходов
-	portaCheck( & porta );
-
    display_init();
    __delay_ms(100);
    display_clear(0);
 
   usartDataPtr = 0;
   dataUpdateNeeded = 1;
+  displayUpdateNeeded = 1;
   LED_OFF;
 
   USARTInit(9600);
   RCIE = 1;
+
+  porta = checkInRangeTimeSettings();
+  PORTA = 0x10 | checkBarrelSensor( porta );
+	
   GIE  = 1 ;
 
   while(1){
 		if( displayUpdateNeeded ){
-			portaCheck( & porta );
+			//porta = checkInRangeTimeSettings();
 			read_time( ( date_time * ) & time );
 
-			if( ( time.minute != minute && time.minute <= 0x59 ) ){// check settings one time per minute only
+			if( ( time.minute != minute && time.minute <= 0x59 ) && portaChanged == 0 ){// check settings one time per minute only
 				minute = time.minute;
 				portaChanged = checkTimeSettings( & porta );
 			}
@@ -61,13 +63,13 @@ void main()
 			displayInputs();
 
 			if( portaChanged ){
-				PORTA = porta;
+				porta = checkOutputsMode( porta );	
+				PORTA = 0x10 | checkBarrelSensor( porta );
 				portaChanged = 0;
 			}
 
 			displayOutputs();
 			displayUpdateNeeded = 0;
-	
 	}// if( displayUpdateNeeded ){
 
 		if( dataUpdateNeeded ){
@@ -78,37 +80,99 @@ void main()
 
 	if( usartDataPtr == USART_PACKET_SIZE ){
 		usartDataPtr = 0;
-		if( usartData[0] == USART_TIME_SETTING ){ // Установка времени
-			time.hour = usartData[4];
-			time.minute = usartData[5];
-			time.day = usartData[6];
-			time.date = usartData[3];
-			time.month = usartData[2];
-			time.year = usartData[1];
-			write_time( ( date_time * ) & time );
-			minute = hour = portaCheck( & porta );
-			LED_OFF;
 
-		}// if( usartData[0] == USART_TIME_SETTING ){ // Установка времени
+		switch( usartData[0] ){
 
-		if( usartData[0] == USART_OUTPUTS_MODE_REQUEST ){ // Запрос на выдачу режима выходов
-			usartData[0] = USART_OUTPUTS_MODE_RESPONSE;
-			usartData[1] = outputsMode[0];
-			usartData[2] = outputsMode[1];
-			usartData[3] = outputsMode[2];
-			usartData[4] = outputsMode[3];
-			sendBufToUsart();
-			LED_OFF;
-		}// if( usartData[0] == USART_OUTPUTS_MODE_REQUEST  ){ // Запрос на выдачу состояний выходов
+			case USART_TIME_SETTING : // Установка времени
+								time.hour = usartData[4];
+								time.minute = usartData[5];
+								time.day = usartData[6];
+								time.date = usartData[3];
+								time.month = usartData[2];
+								time.year = usartData[1];
+								write_time( ( date_time * ) & time );
+								displayUpdateNeeded = 1;
+								portaChanged = 1;
+								LED_OFF;
+								break;
 
-		if( usartData[0] == USART_OUTPUTS_MODE_SET ){ // Изменение режима управления выходами
-			putOutputsMode();
-			minute = hour = portaCheck( & porta );
-			LED_OFF;
-		}// if( usartData[0] == USART_OUTPUTS_SET ){ // Изменение состояний выходов
+			case USART_OUTPUTS_MODE_REQUEST : // Запрос на выдачу режима выходов
+								getOutputsMode();
+								usartData[1] = outputsMode[0];
+								usartData[2] = outputsMode[1];
+								usartData[3] = outputsMode[2];
+								usartData[4] = outputsMode[3];
+								sendBufToUsart();
+								LED_OFF;
+								break;
+
+			case USART_GET_OUTPUTS_STATE: // Запрос на выдачу состояния выходов
+								getOutputsMode();
+								usartData[0] = outputsMode[0];
+								usartData[1] = outputsMode[1];
+								usartData[2] = outputsMode[2];
+								usartData[3] = outputsMode[3];
+								usartData[4] = RA0;
+								usartData[5] = RA1;
+								usartData[6] = RA2;
+								usartData[7] = RA3;
+								sendBufToUsart();
+								LED_OFF;
+								break;
+
+			case USART_OUTPUTS_ALARM_SETTINGS_REQUEST : // Запрос на выдачу уставок выходов
+								tempAddr = usartData[1]; // Адрес банка уставок
+								usartData[7] = tempAddr;
+								usartData[0] = eeprom_read( tempAddr ++ );
+								usartData[1] = eeprom_read( tempAddr ++ );
+								usartData[2] = eeprom_read( tempAddr ++ );
+								usartData[3] = eeprom_read( tempAddr ++ );
+								usartData[4] = eeprom_read( tempAddr ++ );
+								usartData[5] = eeprom_read( tempAddr ++ );			
+								usartData[6] = eeprom_read( tempAddr ++ );
+								sendBufToUsart();
+								LED_OFF;
+								break;
+
+			case USART_OUTPUT_ALARM_SETTINGS_SET : // Запись уставок выходов
+								tempAddr = usartData[1]; // Адрес банка уставки
+								eeprom_write( tempAddr ++, usartData[2] );
+								eeprom_write( tempAddr ++, usartData[3] );
+								eeprom_write( tempAddr ++, usartData[4] );
+								eeprom_write( tempAddr ++, usartData[5] );
+								eeprom_write( tempAddr ++, usartData[6] );
+								eeprom_write( tempAddr ++, usartData[7] );
+								eeprom_write( tempAddr ++, 0xFF );
+								eeprom_write( tempAddr ++, 0xFF );
+					
+								displayUpdateNeeded = 1;
+								portaChanged = 1;
+								LED_OFF;
+								break;
+
+			case USART_OUTPUTS_MODE_SET : // Изменение режима управления выходами
+								putOutputsMode();
+					  			porta = checkInRangeTimeSettings();
+					 			PORTA = 0x10 | checkBarrelSensor( porta );
+								LED_OFF;
+								break;
+
+			case USART_DISPLAY_ON :// Включить дисплей
+								display_init();
+								__delay_ms(100);
+							    display_clear(0);
+								portaChanged = 1;
+								displayUpdateNeeded = 1;
+					  			minute = 0xFF;
+					  			hour = 0xFF;
+								LED_OFF;
+								break;
+
+			case USART_DISPLAY_OFF : // Вылючить дисплей
+								display_sleep();
+								LED_OFF;
+								break;
+		}// switch( usartData[0] ){
 	  }// if( usartDataPtr == USART_PACKET_SIZE ){
 	}// while(1){
-}
-
-
-
+}// void main()

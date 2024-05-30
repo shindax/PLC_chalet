@@ -2,10 +2,10 @@
 
 void displayOutputs( void )
 {
-	unsigned char ch1 = outputsMode[0] == 0 ? MANUAL_OFF : outputsMode[0] == 1 ? MANUAL_ON : INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + FILL_BARREL_OUTPUT;
-	unsigned char ch2 = outputsMode[1] == 0 ? MANUAL_OFF : outputsMode[1] == 1 ? MANUAL_ON : INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + OUTPUT_2;
-	unsigned char ch3 = outputsMode[2] == 0 ? MANUAL_OFF : outputsMode[2] == 1 ? MANUAL_ON : INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + OUTPUT_3;
-	unsigned char ch4 = outputsMode[3] == 0 ? MANUAL_OFF : outputsMode[3] == 1 ? MANUAL_ON : INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + OUTPUT_4;
+	unsigned char ch1 = outputsMode[0] == 0 ? MANUAL_OFF : outputsMode[0] == 1 ? MANUAL_ON : INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + RA0;
+	unsigned char ch2 = outputsMode[1] == 0 ? MANUAL_OFF : outputsMode[1] == 1 ? MANUAL_ON : INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + RA1;
+	unsigned char ch3 = outputsMode[2] == 0 ? MANUAL_OFF : outputsMode[2] == 1 ? MANUAL_ON : INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + RA2;
+	unsigned char ch4 = outputsMode[3] == 0 ? MANUAL_OFF : outputsMode[3] == 1 ? MANUAL_ON : INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + RA3;
 
 	unsigned char pos = 40;
 	display_char_8x16( pos				 , OUTPUT_LINE, ch1 );
