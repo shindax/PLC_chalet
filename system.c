@@ -76,7 +76,7 @@ void getEepromTimeSetting( unsigned char addr, unsigned char * channel, unsigned
 
 unsigned int getMinutes( date_time var )
 { 
-	return (( int )var.hour) * 60 + ( int )var.minute; 
+	return  ((( int )var.hour ) << 8 ) | var.minute ; 
 }
 
 unsigned char checkInRangeTimeSettings( void )

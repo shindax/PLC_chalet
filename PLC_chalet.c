@@ -47,7 +47,7 @@ void main()
 
   while(1){
 		if( displayUpdateNeeded ){
-			//porta = checkInRangeTimeSettings();
+			porta = checkInRangeTimeSettings();
 			read_time( ( date_time * ) & time );
 
 			if( ( time.minute != minute && time.minute <= 0x59 ) && portaChanged == 0 ){// check settings one time per minute only
