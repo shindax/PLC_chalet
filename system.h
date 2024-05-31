@@ -60,6 +60,7 @@
 
 #define MANUAL_ON						50
 #define MANUAL_OFF						51
+#define MANUAL_ON_DISABLED				52
 
 #define DIGIT_TABLE_SHIFT				26
 #define BOLD_DIGIT_TABLE_SHIFT			38

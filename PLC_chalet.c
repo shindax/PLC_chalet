@@ -39,15 +39,12 @@ void main()
   USARTInit(19200);
 
   RCIE = 1;
-
-  porta = checkInRangeTimeSettings();
-  PORTA = 0x10 | checkBarrelSensor( porta );
-	
   GIE  = 1 ;
 
   while(1){
 		if( displayUpdateNeeded ){
 			porta = checkInRangeTimeSettings();
+  			PORTA = 0x10 | checkBarrelSensor( porta );
 			read_time( ( date_time * ) & time );
 
 			if( ( time.minute != minute && time.minute <= 0x59 ) && portaChanged == 0 ){// check settings one time per minute only
@@ -151,8 +148,6 @@ void main()
 
 			case USART_OUTPUTS_MODE_SET : // Изменение режима управления выходами
 								putOutputsMode();
-					  			porta = checkInRangeTimeSettings();
-					 			PORTA = 0x10 | checkBarrelSensor( porta );
 								break;
 
 			case USART_DISPLAY_REFRESH : // Обновить дисплей
