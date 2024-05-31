@@ -39,12 +39,12 @@ void main()
   USARTInit(19200);
 
   RCIE = 1;
+  porta = checkInRangeTimeSettings();
+  PORTA = 0x10 | checkBarrelSensor( porta );
   GIE  = 1 ;
 
   while(1){
 		if( displayUpdateNeeded ){
-			porta = checkInRangeTimeSettings();
-  			PORTA = 0x10 | checkBarrelSensor( porta );
 			read_time( ( date_time * ) & time );
 
 			if( ( time.minute != minute && time.minute <= 0x59 ) && portaChanged == 0 ){// check settings one time per minute only
@@ -92,8 +92,8 @@ void main()
 								write_time( ( date_time * ) & time );
 								hour = 0xFF;
 								minute = 0xFF;
-								displayUpdateNeeded = 1;
-								portaChanged = 1;
+								porta = checkInRangeTimeSettings();
+  								PORTA = 0x10 | checkBarrelSensor( porta );
 								break;
 
 			case USART_OUTPUTS_MODE_REQUEST : // Запрос на выдачу режима выходов
@@ -141,9 +141,8 @@ void main()
 								eeprom_write( tempAddr ++, usartData[7] );
 								eeprom_write( tempAddr ++, 0xFF );
 								eeprom_write( tempAddr ++, 0xFF );
-					
-								displayUpdateNeeded = 1;
-								portaChanged = 1;
+								porta = checkInRangeTimeSettings();
+  								PORTA = 0x10 | checkBarrelSensor( porta );
 								break;
 
 			case USART_OUTPUTS_MODE_SET : // Изменение режима управления выходами
