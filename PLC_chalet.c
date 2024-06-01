@@ -147,6 +147,8 @@ void main()
 
 			case USART_OUTPUTS_MODE_SET : // Изменение режима управления выходами
 								putOutputsMode();
+								porta = checkInRangeTimeSettings();
+  								PORTA = 0x10 | checkBarrelSensor( porta );
 								break;
 
 			case USART_DISPLAY_REFRESH : // Обновить дисплей

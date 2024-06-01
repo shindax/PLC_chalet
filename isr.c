@@ -12,6 +12,7 @@ static void interrupt isr( void )
 		usartData[ usartDataPtr ++ ] = ch;
 		LED_ON;
 		heartBeatTick = 0;
+		tick = 0;
 	}
 
     if( TMR0IF && TMR0IE )        // Was it a timer 0 overflow?
