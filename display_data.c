@@ -2,10 +2,10 @@
 
 void displayOutputs( void )
 {
-	unsigned char ch1 = outputsMode[0] == 0 ? MANUAL_OFF : outputsMode[0] == 1 ? ( !RA0 ? MANUAL_ON_DISABLED : MANUAL_ON ) : INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + RA0;
-	unsigned char ch2 = outputsMode[1] == 0 ? MANUAL_OFF : outputsMode[1] == 1 ? ( !RA1 ? MANUAL_ON_DISABLED : MANUAL_ON ) : INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + RA1;
-	unsigned char ch3 = outputsMode[2] == 0 ? MANUAL_OFF : outputsMode[2] == 1 ? ( !RA2 ? MANUAL_ON_DISABLED : MANUAL_ON ) : INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + RA2;
-	unsigned char ch4 = outputsMode[3] == 0 ? MANUAL_OFF : outputsMode[3] == 1 ? ( !RA3 ? MANUAL_ON_DISABLED : MANUAL_ON ) : INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + RA3;
+	unsigned char ch1 = outputsMode[0] == 0 ? MANUAL_OFF : outputsMode[0] == 1 ? ( !RA0 ? MANUAL_ON_DISABLED : MANUAL_ON ) : OUTPUT_SYMBOL_TABLE_SHIFT + RA0;
+	unsigned char ch2 = outputsMode[1] == 0 ? MANUAL_OFF : outputsMode[1] == 1 ? ( !RA1 ? MANUAL_ON_DISABLED : MANUAL_ON ) : OUTPUT_SYMBOL_TABLE_SHIFT + RA1;
+	unsigned char ch3 = outputsMode[2] == 0 ? MANUAL_OFF : outputsMode[2] == 1 ? ( !RA2 ? MANUAL_ON_DISABLED : MANUAL_ON ) : OUTPUT_SYMBOL_TABLE_SHIFT + RA2;
+	unsigned char ch4 = outputsMode[3] == 0 ? MANUAL_OFF : outputsMode[3] == 1 ? ( !RA3 ? MANUAL_ON_DISABLED : MANUAL_ON ) : OUTPUT_SYMBOL_TABLE_SHIFT + RA3;
 
 	unsigned char pos = 40;
 	display_char_8x16( pos				 , OUTPUT_LINE, ch1 );
@@ -16,15 +16,15 @@ void displayOutputs( void )
 
 void displayInputs( void )
 {
-	unsigned char pos = 0;
-	display_char_8x16( pos				 , INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_1 );
-	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_2 );
-	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_3 );
-	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_4 );
-	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_5 );
-	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + BARREL_IS_FULL  );
-	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_7 );
-	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_OUTPUT_SYMBOL_TABLE_SHIFT + INPUT_8 );
+	unsigned char pos = 6;
+	display_char_8x16( pos				 , INPUT_LINE, INPUT_SYMBOL_TABLE_SHIFT + INPUT_1 );
+	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_SYMBOL_TABLE_SHIFT + INPUT_2 );
+	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_SYMBOL_TABLE_SHIFT + INPUT_3 );
+	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_SYMBOL_TABLE_SHIFT + INPUT_4 );
+	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_SYMBOL_TABLE_SHIFT + INPUT_5 );
+	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_SYMBOL_TABLE_SHIFT + BARREL_IS_FULL );
+	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_SYMBOL_TABLE_SHIFT + INPUT_7 );
+	display_char_8x16( pos += SYMBOL_SIZE, INPUT_LINE, INPUT_SYMBOL_TABLE_SHIFT + INPUT_8 );
 }
 
 void displayTime( void )

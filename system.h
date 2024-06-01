@@ -50,7 +50,8 @@
 #define	FAN_3			0x03
 #define	UV_LAMP_4		0x04
 
-#define INPUT_OUTPUT_SYMBOL_TABLE_SHIFT	23
+#define INPUT_SYMBOL_TABLE_SHIFT		23
+#define OUTPUT_SYMBOL_TABLE_SHIFT		53
 #define COLON_SYMBOL					25
 #define DOT_SYMBOL						37
 #define BOLD_DOT_SYMBOL					49
